@@ -25,12 +25,12 @@ export const configValidationSchema = Joi.object({
   AIRTABLE_ACCESS_TOKEN: Joi.string().required(),
 
   S3_ENDPOINT: Joi.string()
-    .uri({ scheme: ["https"] })
+    .uri({ scheme: ["https", "http"] })
     .required(),
   S3_REGION: Joi.string().required(),
   S3_BUCKET: Joi.string().required(),
   S3_VIRTUAL_HOST: Joi.string()
-    .uri({ scheme: ["https"] })
+    .uri({ scheme: ["https", "http"] })
     .required(),
   AWS_ACCESS_KEY_ID: Joi.string().required(),
   AWS_SECRET_ACCESS_KEY: Joi.string().required(),
