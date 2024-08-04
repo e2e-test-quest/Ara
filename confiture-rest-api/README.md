@@ -7,6 +7,7 @@ Le projet est une API [Nest.js](https://nestjs.com/) et utilise une base de donn
 - [Node.js](https://nodejs.org)
 - [Yarn](https://yarnpkg.com)
 - [Docker](https://www.docker.com)
+- [Docker Compose](https://docs.docker.com/compose/)
 
 ## Installation
 
@@ -16,28 +17,17 @@ Installer les dépendances :
 yarn install
 ```
 
-Créer le fichier de variables d’environnement :
+Lancer les conteneurs docker :
 
 ```sh
-cp .env.example .env
+docker-compose up -d
 ```
-
-Remplir les variables d’environnement requises dans le `.env` :
-
-- `MAILER_USER` et `MAILER_PASSWORD` peuvent être générées via [https://ethereal.email/](https://ethereal.email/) en cliquant sur "Create Ethereal account".
-- `AIRTABLE_*`, `S3_*` et `AWS_*` doivent être demandées en privé.
-- `JWT_SECRET` peut être laissé à sa valeur par défaut.
-
-Lancer la base de données :
-
-```sh
-docker run --name confiture-db \
-           --env POSTGRES_USER=db-user \
-           --env POSTGRES_PASSWORD=db-password \
-           --publish 127.0.0.1:5432:5432 \
-           --detach \
-             postgres:13
-```
+Ci-dessous la liste des applications démarrées :
+| Application | Description | Accès |
+| -- | -- | -- |
+| `db` | Bases de données Postgres | localhost:5432 |
+| `minio` | Serveur S3 permettant de :<br> - créer un bucket<br> - créer une paire AWS_ACCESS_KEY_ID & AWS_SECRET_ACCESS_KEY  | - IHM d'administration : http://localhost:9001 avec *login:* `ara-s3-user` / *mot de passe:* `ara-s3-password`<br> - API S3 : http://localhost:9000 |
+| `fake-smtp` | Faux serveur smtp |  - IHM de consultation des mails : http://localhost:8901<br> - Port serveur SMTP : 1025 |
 
 Lancer les migrations de la base de données :
 

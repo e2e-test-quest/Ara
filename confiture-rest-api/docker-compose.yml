@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: db-user
+      POSTGRES_PASSWORD: db-password
+    ports:
+      - "5432:5432"
+  
+  minio-server:
+    image: 'bitnami/minio:latest'
+    restart: always
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_DEFAULT_BUCKETS: ara-s3-bucket
+      MINIO_ROOT_USER: ara-s3-user
+      MINIO_ROOT_PASSWORD: ara-s3-password
+      MINIO_FORCE_NEW_KEYS: 'yes'
+    volumes:
+      - 'minio:/bitnami/minio/data'
+
+  fake-smtp:
+    image: haravich/fake-smtp-server
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8901:1080"
+
+volumes:
+  minio:
+    driver: local
