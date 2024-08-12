@@ -94,7 +94,7 @@ const headerInfos = computed(() => [
           title: "Taux global de conformité",
           description: auditIsInProgress.value
             ? "(Disponible à la fin de l’audit)"
-            : "RGAA version 4.1",
+            : "RAWEB 1",
           value: auditIsInProgress.value ? 0 : complianceLevel.value,
           total: 100,
           unit: "%",

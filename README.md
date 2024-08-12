@@ -1,6 +1,6 @@
 # Ara
 
-Réaliser des audits d'accessibilité numérique sur la base du référentiel général d'amélioration de l'accessibilité (RGAA).
+Réaliser des audits d'accessibilité numérique sur la base du référentiel général d'amélioration de l'accessibilité (RAWEB).
 Générer et consulter les rapports de ces audits et les déclarations d'accessibilité.
 
 ## Développement

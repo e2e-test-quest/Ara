@@ -195,7 +195,7 @@ const siteUrl = computed(() => {
 
         <p>
           Cette déclaration d’accessibilité adopte un format obligatoire donné
-          par le Référentiel général d'amélioration de l'accessibilité (RGAA).
+          par le Référentiel d'Évaluation de l'Accessibilité Web (RAWEB).
           Vous devez publier l’intégralité de cette déclaration.
         </p>
 
@@ -231,7 +231,7 @@ const siteUrl = computed(() => {
               </a></strong
             >
             est <strong>{{ getA11yLevel() }}</strong> conforme avec le
-            référentiel général d’amélioration de l’accessibilité (RGAA).
+              Référentiel d'Évaluation de l'Accessibilité Web (RAWEB).
           </p>
 
           <h4 class="fr-h2">Résultats des tests</h4>
@@ -239,7 +239,7 @@ const siteUrl = computed(() => {
             L’audit de conformité réalisé par
             <strong>{{ report.data.context.auditorOrganisation }}</strong>
             révèle que <strong>{{ report.data.accessibilityRate }}%</strong> des
-            critères du RGAA version 4 sont respectés.
+            critères du RAWEB 1 sont respectés.
           </p>
 
           <template
@@ -306,7 +306,7 @@ const siteUrl = computed(() => {
             <p>
               Les vérifications de restitution de contenus ont été réalisées sur
               la base de la combinaison fournie par la base de référence du
-              RGAA, avec les versions suivantes :
+              RAWEB, avec les versions suivantes :
             </p>
             <ul class="fr-mb-2w fr-mb-md-3w">
               <li v-for="(env, i) in report.data.context.environments" :key="i">

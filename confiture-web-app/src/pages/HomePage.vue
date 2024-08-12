@@ -84,17 +84,15 @@ const steps = [
     <p class="fr-text--lg">
       Ara nécessite une bonne connaissance de la méthode technique du
       <abbr
-        title="référentiel général d'amélioration de
-          l'accessibilité"
-        >RGAA</abbr
+        title="Référentiel d'Évaluation de l'Accessibilité Web"
+        >RAWEB</abbr
       >.
     </p>
     <p>
       <strong>Ce n’est pas un outil d’audit automatique.</strong>
     </p>
     <p>
-      Basé sur la dernière version du référentiel général d'amélioration de
-      l'accessibilité (RGAA 4.1) vous pouvez&nbsp;:
+      Basé sur la dernière version du Référentiel d'Évaluation de l'Accessibilité Web (RAWEB) vous pouvez&nbsp;:
     </p>
     <ul>
       <li>Commencer par un audit rapide (25 critères)</li>

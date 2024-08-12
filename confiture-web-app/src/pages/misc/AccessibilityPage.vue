@@ -27,8 +27,7 @@ import PageMeta from "../../components/PageMeta";
 
     <p>
       Aucun audit n’a été encore effectué.<br />
-      Ara.numerique.gouv.fr est non conforme avec le référentiel général
-      d’amélioration de l’accessibilité (RGAA).
+      Ara.numerique.gouv.fr est non conforme avec le Référentiel d'Évaluation de l'Accessibilité Web (RGWEB).
     </p>
     <p>
       Un audit de conformité est bien planifié et l’état de conformité sera mis

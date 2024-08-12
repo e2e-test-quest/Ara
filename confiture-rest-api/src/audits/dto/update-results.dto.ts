@@ -22,7 +22,7 @@ import {
 
 import { CRITERIA } from "../criteria";
 
-/** Validates the criterium property to make sure the criterium exists in the RGAA. */
+/** Validates the criterium property to make sure the criterium exists in the RAWEB. */
 export function IsRgaaCriterium(validationOptions?: ValidationOptions) {
   return function (
     object: Pick<UpdateResultsItem, "topic" | "criterium">,

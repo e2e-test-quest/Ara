@@ -38,7 +38,7 @@ const audits = [
     value: AuditType.FULL,
     goals: [
       "Identifier toutes les erreurs d’accessibilité",
-      "Obtenir un taux global de conformité au RGAA ",
+      "Obtenir un taux global de conformité au RAWEB ",
       "Générer une déclaration d’accessibilité"
     ],
     documentation:

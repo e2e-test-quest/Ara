@@ -72,7 +72,7 @@ function fillSettings() {
     </p>
 
     <p v-if="auditType === AuditType.FULL" class="fr-mb-2w">
-      Par défaut nous vous proposons les pages obligatoires prévues par le RGAA
+      Par défaut nous vous proposons les pages obligatoires prévues par le RAWEB
       quand elles sont disponibles sur le site à auditer.
     </p>
 

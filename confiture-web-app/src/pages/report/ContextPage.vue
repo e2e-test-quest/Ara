@@ -49,7 +49,7 @@ useWrappedFetch(() => report.fetchReport(uniqueId));
           ? "l’intégralité"
           : "une partie"
       }}
-      des critères du RGAA (<strong>{{
+      des critères du RAWEB (<strong>{{
         getCriteriaCount(report.data.auditType)
       }}</strong>
       critères) ont été appliqués sur l’ensemble des pages défini préalablement
@@ -110,8 +110,8 @@ useWrappedFetch(() => report.fetchReport(uniqueId));
     <p>
       La méthodologie utilisée pour réaliser cet audit repose sur le
       <strong
-        >référentiel général d’amélioration de l’accessibilité (RGAA)
-        4.1</strong
+        >Référentiel d'Évaluation de l'Accessibilité Web (RAWEB)
+        1</strong
       >.
     </p>
 

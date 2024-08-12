@@ -19,7 +19,7 @@ const fullAudit = {
   value: AuditType.FULL,
   goals: [
     "Identifier toutes les erreurs d’accessibilité",
-    "Obtenir un taux global de conformité au RGAA ",
+    "Obtenir un taux global de conformité au RAWEB ",
     "Générer une déclaration d’accessibilité"
   ],
   documentation:
@@ -74,7 +74,7 @@ function fillSettings() {
 
     <h3 class="fr-h6 fr-mb-1w">Audit complet</h3>
     <p class="fr-mb-2w">
-      Cet audit permet de mesurer la conformité au RGAA d’un site internet, il a
+      Cet audit permet de mesurer la conformité au RAWEB d’un site internet, il a
       une <strong>valeur légale</strong>.
     </p>
     <AuditTypeRadio

@@ -101,7 +101,7 @@ class TopicResultDistribution extends ResultDistribution {
 
 class ReportContext {
   /**
-   * @example "RGAA Version 4.1"
+   * @example "RAWEB Version 4.1"
    */
   referencial: string;
 
