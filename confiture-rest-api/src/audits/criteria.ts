@@ -1,12 +1,12 @@
 import { AuditType } from "@prisma/client";
-import * as rgaa from "../rgaa.json";
+import * as RAWEB1 from "../raweb1.json";
 
 interface CriteriumId {
   topic: number;
   criterium: number;
 }
 
-export const CRITERIA = rgaa.topics.flatMap((topic) =>
+export const CRITERIA = RAWEB1.topics.flatMap((topic) =>
   topic.criteria.map((c) => ({
     topic: topic.number,
     criterium: c.criterium.number

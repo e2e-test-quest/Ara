@@ -10,6 +10,7 @@
     "test:coverage": "vitest --coverage",
     "lint": "eslint '{src,scripts}/**/*.{ts,vue}'",
     "generate:rgaa": "node scripts/build-rgaa-files.js",
+    "generate:raweb": "node scripts/build-raweb-files.js",
     "postinstall": "cp ../ROADMAP.md ../CHANGELOG.md ./src/assets"
   },
   "dependencies": {

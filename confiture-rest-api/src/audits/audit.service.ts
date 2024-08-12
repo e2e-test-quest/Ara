@@ -15,7 +15,7 @@ import sharp from "sharp";
 import { omit, pick, setWith, uniqBy } from "lodash";
 
 import { PrismaService } from "../prisma.service";
-import * as RGAA from "../rgaa.json";
+import * as RAWEB1 from "../raweb1.json";
 import { AuditReportDto } from "./dto/audit-report.dto";
 import { CreateAuditDto } from "./dto/create-audit.dto";
 import { CRITERIA_BY_AUDIT_TYPE } from "./criteria";
@@ -877,7 +877,7 @@ export class AuditService {
           assistiveTechnology: e.assistiveTechnology,
           browser: e.browser
         })),
-        referencial: "RGAA Version 4.1",
+        referencial: "RAWEB 1",
         samples: audit.pages
           .map((p, i) => ({
             name: p.name,
@@ -954,7 +954,7 @@ export class AuditService {
         }
       },
 
-      topicDistributions: RGAA.topics
+      topicDistributions: RAWEB1.topics
         .map((t) => {
           const total = CRITERIA_BY_AUDIT_TYPE[audit.auditType].filter(
             (c) => c.topic === t.number

@@ -28,5 +28,6 @@ coverage
 .env
 
 accessibilite.numerique.gouv.fr
+ReferentielAccessibiliteWeb
 src/methodologies.json
 src/criteres.json
