@@ -72,6 +72,7 @@ export interface CreateAuditRequestData {
   pages: Omit<AuditPage, "id" | "order">[];
   auditorEmail: string;
   auditorName: string | null;
+  result?: { data: CriteriumResult[] };
 }
 
 /** Creation data type plus step 2 fields. */

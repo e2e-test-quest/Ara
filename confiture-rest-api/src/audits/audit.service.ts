@@ -2,10 +2,10 @@ import { Injectable } from "@nestjs/common";
 import {
   Audit,
   AuditedPage,
+  AuditFile,
   CriterionResult,
   CriterionResultStatus,
   CriterionResultUserImpact,
-  AuditFile,
   Prisma,
   StoredFile,
   TestEnvironment
@@ -342,7 +342,6 @@ export class AuditService {
     const pages = await this.prisma.auditedPage.findMany({
       where: { auditUniqueId: uniqueId }
     });
-
     const promises = body.data
       .map((item) => {
         const data: Prisma.CriterionResultUpsertArgs["create"] = {

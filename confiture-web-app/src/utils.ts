@@ -276,3 +276,16 @@ export async function handleFileDeleteError(
 
   return FileErrorMessage.DELETE_UNKNOWN;
 }
+
+export async function readJson(file: File): Promise<string | undefined> {
+  if (file.type !== "application/json") {
+    return;
+  }
+  const reader = new FileReader();
+
+  return await new Promise<string>((resolve, reject) => {
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(file);
+  });
+}

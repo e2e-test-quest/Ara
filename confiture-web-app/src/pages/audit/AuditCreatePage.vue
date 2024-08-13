@@ -6,12 +6,14 @@ import LeaveModal from "../../components/audit/LeaveModal.vue";
 import NewAuditContactDetails from "../../components/audit/NewAuditContactDetails.vue";
 import NewAuditPages from "../../components/audit/NewAuditPages.vue";
 import NewAuditType from "../../components/audit/NewAuditType.vue";
+import NewUUVReport from "../../components/audit/NewUUVReport.vue";
 import PageMeta from "../../components/PageMeta";
 import { useNotifications } from "../../composables/useNotifications";
 import router from "../../router";
-import { useAuditStore } from "../../store";
+import { useAuditStore, useResultsStore } from "../../store";
 import { useAccountStore } from "../../store/account";
 import { AuditType, CreateAuditRequestData } from "../../types";
+import { A11yResult, transformUuvReport } from "../../types/uuv-report";
 import { captureWithPayloads } from "../../utils";
 
 const leaveModalRef = ref<InstanceType<typeof LeaveModal>>();
@@ -64,6 +66,7 @@ const accountStore = useAccountStore();
 // Steps management
 const currentStep = ref(0);
 const steps = [
+  "A partir de UUV",
   "Choisissez un type d’audit",
   "Renseignez l’échantillon des pages à auditer",
   ...(accountStore.account && accountStore.account.name
@@ -78,7 +81,8 @@ const audit = ref<CreateAuditRequestData>({
   procedureName: "",
   pages: [{ name: "", url: "" }],
   auditorEmail: accountStore.account?.email ?? "",
-  auditorName: accountStore.account?.name ?? ""
+  auditorName: accountStore.account?.name ?? "",
+  result: undefined
 });
 
 // Default pages per audit type
@@ -114,6 +118,14 @@ watch(auditType, (newValue) => {
   }
 });
 
+async function updateAudit(uuvReport: A11yResult) {
+  //FIXME SSE à dynamiser la pageID
+  const pageId = 1;
+  if (uuvReport) {
+    audit.value.result = { data: transformUuvReport(uuvReport, pageId) };
+  }
+  submitStep(audit.value);
+}
 async function submitStep(payload: Partial<CreateAuditRequestData>) {
   audit.value = {
     ...audit.value,
@@ -133,6 +145,7 @@ async function submitStep(payload: Partial<CreateAuditRequestData>) {
 // Final submission
 const isSubmitting = ref(false);
 const auditStore = useAuditStore();
+const resultsStore = useResultsStore();
 const notify = useNotifications();
 
 function submitAuditSettings() {
@@ -152,17 +165,50 @@ function submitAuditSettings() {
 
   auditStore
     .createAudit(audit.value)
-    .then((audit) => {
+    .then(async (auditResult) => {
       if (!accountStore.account) {
         auditStore.showAuditEmailAlert = true;
+      }
+      if (
+        audit.value.result?.data.length &&
+        audit.value.result?.data.length > 0
+      ) {
+        audit.value.result.data.forEach(
+          (value) => (value.pageId = auditResult.pages[0].id)
+        );
+        await resultsStore.fetchResults(auditResult.editUniqueId);
+        resultsStore.allResults?.forEach((data) => {
+          const auditUpdated = audit.value.result?.data.find(
+            (auditUpdated) =>
+              auditUpdated.criterium === data.criterium &&
+              auditUpdated.topic === data.topic &&
+              auditUpdated.pageId === data.pageId
+          );
+          if (auditUpdated) {
+            data.transverse = auditUpdated.transverse;
+            data.status = auditUpdated.status;
+            data.compliantComment = auditUpdated.compliantComment;
+            data.exampleImages = auditUpdated.exampleImages;
+            data.notApplicableComment = auditUpdated.notApplicableComment;
+            data.quickWin = auditUpdated.quickWin;
+            data.notCompliantComment = auditUpdated.notCompliantComment;
+            data.userImpact = auditUpdated.userImpact;
+          }
+        }) ?? [];
+        console.log(resultsStore.allResults);
+        await resultsStore.updateResults(
+          auditResult.editUniqueId,
+          resultsStore.allResults ?? []
+        );
       }
 
       return router.push({
         name: "audit-overview",
-        params: { uniqueId: audit.editUniqueId }
+        params: { uniqueId: auditResult.editUniqueId }
       });
     })
     .catch((err) => {
+      console.error(err);
       notify(
         "error",
         "Une erreur est survenue",
@@ -205,15 +251,19 @@ async function goToPreviousStep() {
         :data-fr-steps="steps.length"
       />
     </div>
-
-    <NewAuditType
+    <NewUUVReport
       v-if="currentStep === 0"
+      @upload-file="updateAudit"
+      @submit="submitStep"
+    />
+    <NewAuditType
+      v-if="currentStep === 1"
       :audit-type="audit.auditType"
       :procedure-name="audit.procedureName"
       @submit="submitStep"
     />
     <NewAuditPages
-      v-else-if="currentStep === 1"
+      v-else-if="currentStep === 2"
       :audit-type="audit.auditType"
       :pages="audit.pages"
       @previous="goToPreviousStep"
@@ -221,7 +271,7 @@ async function goToPreviousStep() {
       @change="pagesArePristine = false"
     />
     <NewAuditContactDetails
-      v-else-if="currentStep === 2"
+      v-else-if="currentStep === 3"
       :email="audit.auditorEmail"
       :name="audit.auditorName"
       @previous="goToPreviousStep"

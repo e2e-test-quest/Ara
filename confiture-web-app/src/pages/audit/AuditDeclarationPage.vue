@@ -212,6 +212,7 @@ function handleSubmit() {
       });
     })
     .catch((err) => {
+      console.error(err);
       notify(
         "error",
         "Une erreur est survenue",
