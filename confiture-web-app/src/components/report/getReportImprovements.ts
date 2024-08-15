@@ -1,6 +1,5 @@
 import { groupBy, mapValues, uniqWith } from "lodash-es";
 
-import rgaa from "../../criteres.json";
 import { ReportStoreState } from "../../store";
 import { CriteriumResultStatus, ReportCriteriumResult } from "../../types";
 
@@ -19,9 +18,9 @@ export type ReportImprovement = {
     }[];
   }[];
 };
-
 export function getReportImprovements(
-  reportData: ReportStoreState
+  reportData: ReportStoreState,
+  criteria: any
 ): ReportImprovement[] {
   return (
     reportData.data?.context.samples
@@ -37,7 +36,7 @@ export function getReportImprovements(
             .map(([topic, results]) => {
               return {
                 number: Number(topic),
-                name: getTopicName(Number(topic)),
+                name: getTopicName(Number(topic), criteria),
                 improvements: results
                   .filter(hasImprovement)
                   .map(getImprovementObject)
@@ -60,7 +59,6 @@ const hasImprovement = (r: ReportCriteriumResult) =>
   ((r.status === CriteriumResultStatus.COMPLIANT && r.compliantComment) ||
     (r.status === CriteriumResultStatus.NOT_APPLICABLE &&
       r.notApplicableComment));
-
 const getImprovementObject = (r: ReportCriteriumResult) => {
   return {
     criterium: r.criterium,
@@ -71,9 +69,8 @@ const getImprovementObject = (r: ReportCriteriumResult) => {
 
 const resultIsFromPage = (pageId: number) => (result: ReportCriteriumResult) =>
   result.pageId === pageId;
-
-function getTopicName(topicNumber: number) {
-  return rgaa.topics.find((t) => t.number === topicNumber)?.topic;
+function getTopicName(topicNumber: number, criteria: any) {
+  return criteria.topics.find((t) => t.number === topicNumber)?.topic;
 }
 
 export type ReportTransverseImprovement = {
@@ -88,7 +85,8 @@ export type ReportTransverseImprovement = {
 };
 
 export function getReportTransverseImprovements(
-  reportData: ReportStoreState
+  reportData: ReportStoreState,
+  criteria: any
 ): ReportTransverseImprovement[] {
   return Object.values(
     mapValues(
@@ -110,7 +108,7 @@ export function getReportTransverseImprovements(
       (results, topicNumber) => {
         return {
           number: Number(topicNumber),
-          name: getTopicName(Number(topicNumber)),
+          name: getTopicName(Number(topicNumber), criteria),
           improvements: results.map((r) => {
             return {
               topic: r.topic,

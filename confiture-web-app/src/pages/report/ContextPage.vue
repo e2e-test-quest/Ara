@@ -109,9 +109,7 @@ useWrappedFetch(() => report.fetchReport(uniqueId));
     <h2 class="fr-mb-2w fr-mb-md-3w">Méthodologie et référentiel</h2>
     <p>
       La méthodologie utilisée pour réaliser cet audit repose sur le
-      <strong
-        >Référentiel d'Évaluation de l'Accessibilité Web (RAWEB)
-        1</strong
+      <strong>Référentiel d'Évaluation de l'Accessibilité Web (RAWEB) 1</strong
       >.
     </p>
 

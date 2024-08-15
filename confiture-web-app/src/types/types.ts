@@ -31,6 +31,12 @@ export enum AuditStatus {
   PUBLISHABLE = "PUBLISHABLE"
 }
 
+export enum AuditReference {
+  RAWEB = "RAWEB",
+  RAAM = "RAAM",
+  RGAA = "RGAA"
+}
+
 /** An audit object as returned by the API. */
 export interface Audit {
   id: number;
@@ -72,6 +78,7 @@ export interface CreateAuditRequestData {
   pages: Omit<AuditPage, "id" | "order">[];
   auditorEmail: string;
   auditorName: string | null;
+  auditReference: AuditReference;
   result?: { data: CriteriumResult[] };
 }
 

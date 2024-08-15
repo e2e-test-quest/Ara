@@ -195,8 +195,8 @@ const siteUrl = computed(() => {
 
         <p>
           Cette déclaration d’accessibilité adopte un format obligatoire donné
-          par le Référentiel d'Évaluation de l'Accessibilité Web (RAWEB).
-          Vous devez publier l’intégralité de cette déclaration.
+          par le Référentiel d'Évaluation de l'Accessibilité Web (RAWEB). Vous
+          devez publier l’intégralité de cette déclaration.
         </p>
 
         <button
@@ -231,15 +231,16 @@ const siteUrl = computed(() => {
               </a></strong
             >
             est <strong>{{ getA11yLevel() }}</strong> conforme avec le
-              Référentiel d'Évaluation de l'Accessibilité Web (RAWEB).
+            Référentiel d'Évaluation de l'Accessibilité Web (RAWEB).
           </p>
 
           <h4 class="fr-h2">Résultats des tests</h4>
           <p class="fr-mb-9v fr-mb-md-6w">
             L’audit de conformité réalisé par
             <strong>{{ report.data.context.auditorOrganisation }}</strong>
-            révèle que <strong>{{ report.data.accessibilityRate }}%</strong> des
-            critères du RAWEB 1 sont respectés.
+            révèle que
+            <strong>{{ report.data.accessibilityRate }}%</strong> des critères
+            du RAWEB 1 sont respectés.
           </p>
 
           <template

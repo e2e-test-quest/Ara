@@ -2,7 +2,7 @@
 import { chunk } from "lodash-es";
 import { marked } from "marked";
 
-import rgaa from "../../criteres.json";
+import { useReferenceStore } from "../../store/reference";
 import { CriterionResultUserImpact, ReportCriteriumResult } from "../../types";
 import { formatStatus, formatUserImpact, getUploadUrl } from "../../utils";
 import CriteriumTestsAccordion from "../audit/CriteriumTestsAccordion.vue";
@@ -12,10 +12,10 @@ import MarkdownRenderer from "../ui/MarkdownRenderer.vue";
 defineProps<{
   error: ReportCriteriumResult;
 }>();
-
+const referenceStore = useReferenceStore();
 function getCriterium(topicNumber: number, criteriumNumber: number) {
   // FIXME: "any everywhere" : The criteria properties of each topic do not have the same signature. See: https://github.com/microsoft/TypeScript/issues/33591#issuecomment-786443978
-  const criterium = (rgaa.topics as any)
+  const criterium = (referenceStore.criteria.topics as any)
     .find((t: any) => t.number === topicNumber)
     ?.criteria.find((c: any) => c.criterium.number === criteriumNumber)
     .criterium;

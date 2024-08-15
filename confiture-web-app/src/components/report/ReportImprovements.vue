@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useReportStore } from "../../store";
+import { useReferenceStore } from "../../store/reference";
 import {
   getReportImprovements,
   getReportTransverseImprovements
@@ -8,13 +9,16 @@ import ReportCriteria from "./ReportCriteria.vue";
 import ReportImprovementCriterium from "./ReportImprovementCriterium.vue";
 
 const report = useReportStore();
+const referenceStore = useReferenceStore();
 </script>
 
 <template>
   <ReportCriteria
     v-if="report.data"
-    :pages-data="getReportImprovements(report)"
-    :transverse-data="getReportTransverseImprovements(report)"
+    :pages-data="getReportImprovements(report, referenceStore.criteria)"
+    :transverse-data="
+      getReportTransverseImprovements(report, referenceStore.criteria)
+    "
     top-notice="Ci-dessous les commentaires de l’auditeur ou de l’auditrice concernant des critères conformes ou non applicables."
   >
     <template #transverse-data>
@@ -24,7 +28,10 @@ const report = useReportStore();
         </h2>
 
         <div
-          v-for="(topic, i) in getReportTransverseImprovements(report)"
+          v-for="(topic, i) in getReportTransverseImprovements(
+            report,
+            referenceStore.criteria
+          )"
           :key="topic.number"
           :class="{ 'fr-mt-9v': i !== 0 }"
         >
@@ -47,7 +54,7 @@ const report = useReportStore();
 
     <template #pages-data>
       <section
-        v-for="page in getReportImprovements(report)"
+        v-for="page in getReportImprovements(report, referenceStore.criteria)"
         :key="page.id"
         class="fr-mb-8w"
       >

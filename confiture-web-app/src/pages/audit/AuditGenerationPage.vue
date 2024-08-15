@@ -12,22 +12,29 @@ import { StatDonutTheme } from "../../components/StatDonut.vue";
 import BackLink from "../../components/ui/BackLink.vue";
 import { useAuditStats } from "../../composables/useAuditStats";
 import { useWrappedFetch } from "../../composables/useWrappedFetch";
-import rgaa from "../../criteres.json";
-import { CRITERIA_BY_AUDIT_TYPE } from "../../criteria";
 import { useAuditStore, useFiltersStore, useResultsStore } from "../../store";
-import { AuditPage, AuditType, CriteriumResultStatus } from "../../types";
+import { useReferenceStore } from "../../store/reference";
+import {
+  AuditPage,
+  AuditReference,
+  AuditType,
+  CriteriumResultStatus
+} from "../../types";
 import { getCriteriaCount, pluralize } from "../../utils";
 
 const route = useRoute();
 
 const uniqueId = computed(() => route.params.uniqueId as string);
 const auditStore = useAuditStore();
+const referenceStore = useReferenceStore();
 
 useWrappedFetch(async () => {
   resultsStore.$reset();
   await auditStore.fetchAuditIfNeeded(uniqueId.value);
   await resultsStore.fetchResults(uniqueId.value);
-  auditStore.updateCurrentPageId(
+  //FIXME à modifier quand la reference sera sauvegarder dans l'audit
+  await referenceStore.fetchReference(AuditReference.RAWEB);
+  await auditStore.updateCurrentPageId(
     auditStore.currentAudit?.pages.at(0)?.id ?? null
   );
 }, true);
@@ -39,14 +46,15 @@ const topics = computed(() => {
   if (!auditStore.currentAudit?.auditType) {
     return [];
   }
-
   return (
-    rgaa.topics
+    referenceStore.criteria.topics
       // hide topics not present in audit type
       .filter((topic) => {
-        return CRITERIA_BY_AUDIT_TYPE[auditStore.currentAudit!.auditType!].find(
-          (criterium) => criterium.topic === topic.number
-        );
+        return referenceStore
+          .getCriteriaByAuditType()
+          [auditStore.currentAudit!.auditType!].find(
+            (criterium) => criterium.topic === topic.number
+          );
       })
       .map((topic) => {
         // Every results for the current topic

@@ -10,6 +10,12 @@ import {
   ValidateNested
 } from "class-validator";
 
+enum AuditReference {
+  RAWEB = "RAWEB",
+  RAAM = "RAAM",
+  RGAA = "RGAA"
+}
+
 export class CreateAuditPage {
   /**
    * Include the page ID in order to update an existing page.
@@ -62,4 +68,11 @@ export class CreateAuditDto {
   @IsEmail()
   @IsOptional()
   auditorEmail?: string;
+
+  /**
+   * @example "RAAM, RGAA, RAWEB"
+   */
+  @IsString()
+  @IsIn(Object.values(AuditReference))
+  auditReference?: string;
 }

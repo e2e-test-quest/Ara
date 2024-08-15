@@ -288,6 +288,7 @@ export const useResultsStore = defineStore("results", {
 
       this.increaseCurrentRequestCount();
 
+      console.debug("update ça", updates);
       await ky
         .patch(`/api/audits/${uniqueId}/results`, {
           json: {
@@ -295,6 +296,7 @@ export const useResultsStore = defineStore("results", {
           }
         })
         .catch((err) => {
+          console.error(err);
           rollbackResults();
           throw err;
         })

@@ -153,7 +153,7 @@ const auditInProgress = computed(
                 <thead>
                   <tr>
                     <th
-                      v-for="header in pageDistributionTableData.data[0]"
+                      v-for="header in pageDistributionTableData.criteria[0]"
                       :key="header"
                       scope="col"
                     >
@@ -163,7 +163,9 @@ const auditInProgress = computed(
                 </thead>
                 <tbody>
                   <tr
-                    v-for="(row, i) in pageDistributionTableData.data.slice(1)"
+                    v-for="(row, i) in pageDistributionTableData.criteria.slice(
+                      1
+                    )"
                     :key="i"
                   >
                     <td>

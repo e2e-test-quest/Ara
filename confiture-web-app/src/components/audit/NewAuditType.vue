@@ -2,24 +2,26 @@
 import { ref } from "vue";
 
 import { useDevMode } from "../../composables/useDevMode";
-import { AuditType } from "../../types";
+import { AuditReference, AuditType } from "../../types";
 import DsfrField from "../ui/DsfrField.vue";
 import AuditTypeRadio from "./AuditTypeRadio.vue";
 
 const props = defineProps<{
   auditType: string | null;
+  auditReference: AuditReference;
   procedureName: string;
 }>();
 
 const emit = defineEmits<{
   (e: "submit", payload: { auditType: AuditType; procedureName: string }): void;
+  (e: "previous"): void;
 }>();
 
 const fullAudit = {
   value: AuditType.FULL,
   goals: [
     "Identifier toutes les erreurs d’accessibilité",
-    "Obtenir un taux global de conformité au RAWEB ",
+    `Obtenir un taux global de conformité au ${props.auditReference} `,
     "Générer une déclaration d’accessibilité"
   ],
   documentation:
@@ -42,6 +44,10 @@ const partialAudits = [
 
 const auditType = ref(props.auditType);
 const procedureName = ref(props.procedureName);
+
+function goToPreviousStep() {
+  emit("previous");
+}
 
 function submitAuditType() {
   emit("submit", {
@@ -74,8 +80,9 @@ function fillSettings() {
 
     <h3 class="fr-h6 fr-mb-1w">Audit complet</h3>
     <p class="fr-mb-2w">
-      Cet audit permet de mesurer la conformité au RAWEB d’un site internet, il a
-      une <strong>valeur légale</strong>.
+      Cet audit permet de mesurer la conformité au
+      {{ props.auditReference }} d’un site internet, il a une
+      <strong>valeur légale</strong>.
     </p>
     <AuditTypeRadio
       v-model="auditType"
@@ -113,8 +120,14 @@ function fillSettings() {
       label="Nom du site à auditer"
       required
     />
-
     <div class="actions">
+      <button
+        type="button"
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-arrow-left-s-line"
+        @click="goToPreviousStep"
+      >
+        Étape précédente
+      </button>
       <button
         type="submit"
         class="fr-btn fr-btn--icon-right fr-icon-arrow-right-s-line"
