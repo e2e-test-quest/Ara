@@ -192,7 +192,6 @@ function submitAuditSettings() {
           (value) => (value.pageId = auditResult.pages[0].id)
         );
         await resultsStore.fetchResults(auditResult.editUniqueId);
-        console.log(resultsStore.allResults);
         resultsStore.allResults?.forEach((data) => {
           const auditUpdated = audit.value.result?.data.find(
             (auditUpdated) =>

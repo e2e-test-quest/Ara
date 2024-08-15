@@ -31,6 +31,9 @@ defineProps<{
           Nom de l’audit
         </p>
         <p aria-hidden="true" class="fr-text--sm fr-text--bold fr-mb-0">
+          Référentiel
+        </p>
+        <p aria-hidden="true" class="fr-text--sm fr-text--bold fr-mb-0">
           Statut
         </p>
         <p aria-hidden="true" class="fr-text--sm fr-text--bold fr-mb-0">

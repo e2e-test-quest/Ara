@@ -52,6 +52,7 @@ export interface Audit {
   procedureName: string;
   pages: AuditPage[];
   auditorEmail: string;
+  auditReference: AuditReference;
   auditorName: string | null;
 
   // A11y declaration edition

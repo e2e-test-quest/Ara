@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 
 import { useNotifications } from "../../../composables/useNotifications";
 import { useAuditStore } from "../../../store";
-import { AuditStatus, AuditType } from "../../../types";
+import { AuditReference, AuditStatus, AuditType } from "../../../types";
 import { AccountAudit } from "../../../types/account";
 import {
   captureWithPayloads,
@@ -161,7 +161,19 @@ function copyStatementLink(uniqueId: string) {
     >
       <strong>{{ audit.procedureName }}</strong>
     </RouterLink>
-
+    <p
+      class="fr-badge fr-badge--sm audit-reference"
+      :class="{
+        'fr-badge--brown-opera': audit.auditReference === AuditReference.RGAA,
+        'fr-badge--green-bourgeon':
+          audit.auditReference === AuditReference.RAWEB,
+        'fr-badge--orange-terre-battue':
+          audit.auditReference === AuditReference.RAAM
+      }"
+    >
+      <span class="fr-sr-only">Référentiel </span>
+      {{ audit.auditReference }}
+    </p>
     <!-- Status -->
     <p
       class="fr-badge fr-badge--sm audit-status"

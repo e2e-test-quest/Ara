@@ -102,7 +102,7 @@ const headerInfos = computed(() => [
           title: "Taux global de conformité",
           description: auditIsInProgress.value
             ? "(Disponible à la fin de l’audit)"
-            : "RAWEB 1",
+            : auditStore.currentAudit.auditReference,
           value: auditIsInProgress.value ? 0 : complianceLevel.value,
           total: 100,
           unit: "%",
@@ -238,6 +238,7 @@ const tabsData = computed((): TabData[] => {
     <AuditGenerationHeader
       ref="auditGenerationHeader"
       :audit-name="auditStore.currentAudit.procedureName"
+      :audit-reference="auditStore.currentAudit.auditReference"
       :key-infos="headerInfos"
       :audit-publication-date="auditStore.currentAudit.publicationDate"
       :audit-edition-date="auditStore.currentAudit.editionDate"

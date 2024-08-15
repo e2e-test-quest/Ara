@@ -49,7 +49,7 @@ const auditIsInProgress = computed(() => {
         class="fr-h3 fr-mb-0 audit-step-title"
         aria-describedby="audit-step-status"
       >
-        Audit
+        Audit {{ audit.auditReference }}
         <p
           v-if="audit.auditType"
           class="fr-badge fr-badge--info fr-badge--no-icon"
@@ -105,7 +105,7 @@ const auditIsInProgress = computed(() => {
 
           <div class="card-info">
             <p class="fr-text--bold fr-mb-1v">Taux global de conformité</p>
-            <p class="fr-text--xs fr-mb-0">RAWEB 1</p>
+            <p class="fr-text--xs fr-mb-0">{{ audit.auditReference }}</p>
           </div>
         </div>
         <span aria-hidden="true" class="audit-step-chart-separator" />

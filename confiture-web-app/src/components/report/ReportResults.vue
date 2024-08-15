@@ -17,7 +17,7 @@ const stats = computed(() => {
             title: "Taux global de conformité",
             description: auditInProgress.value
               ? "(Disponible à la fin de l’audit)"
-              : "RAWEB 1",
+              : aud,
             value: auditInProgress.value ? 0 : report.data?.accessibilityRate,
             total: 100,
             unit: "%",

@@ -9,12 +9,7 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-
-enum AuditReference {
-  RAWEB = "RAWEB",
-  RAAM = "RAAM",
-  RGAA = "RGAA"
-}
+import { AuditReference } from "../criteria";
 
 export class CreateAuditPage {
   /**
@@ -63,16 +58,16 @@ export class CreateAuditDto {
   auditorName: string;
 
   /**
+   * @example "RAAM, RGAA, RAWEB"
+   */
+  @IsString()
+  @IsIn(Object.values(AuditReference))
+  auditReference: string;
+
+  /**
    * @example "john@audit.com"
    */
   @IsEmail()
   @IsOptional()
   auditorEmail?: string;
-
-  /**
-   * @example "RAAM, RGAA, RAWEB"
-   */
-  @IsString()
-  @IsIn(Object.values(AuditReference))
-  auditReference?: string;
 }

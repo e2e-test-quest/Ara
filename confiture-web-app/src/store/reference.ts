@@ -48,7 +48,6 @@ export const useReferenceStore = defineStore("reference", {
   }),
   actions: {
     async fetchReference(auditReference: AuditReference) {
-      console.debug("je me fetche là");
       this.reference = auditReference;
       let criteria = null;
       let methodologies = null;

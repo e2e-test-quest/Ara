@@ -1,4 +1,4 @@
-import { AuditStatus, AuditType } from "./types";
+import { AuditReference, AuditStatus, AuditType } from "./types";
 
 export interface Account {
   id: string;
@@ -23,6 +23,7 @@ export interface AccountAudit {
   status: AuditStatus.IN_PROGRESS | AuditStatus.COMPLETED;
   creationDate: string;
   auditType: AuditType;
+  auditReference: AuditReference;
   complianceLevel: number;
   editUniqueId: string;
   consultUniqueId: string;

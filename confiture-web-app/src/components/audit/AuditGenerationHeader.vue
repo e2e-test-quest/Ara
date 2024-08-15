@@ -29,6 +29,7 @@ import SaveIndicator from "./SaveIndicator.vue";
 
 defineProps<{
   auditName: string;
+  auditReference: string;
   auditPublicationDate: string | null;
   auditEditionDate: string | null;
   keyInfos: {
@@ -246,7 +247,7 @@ onMounted(() => {
     >
       <AuditProgressBar
         v-if="showAuditProgressBar"
-        label="Progression de l’audit"
+        :label="`Progression de l’audit ${auditReference}`"
         class="progress-bar"
       />
 
@@ -555,7 +556,7 @@ onMounted(() => {
   }
 }
 
-.audit-status {
+.audit-status .audit-reference {
   display: flex;
   align-items: center;
   gap: 0.625rem;
