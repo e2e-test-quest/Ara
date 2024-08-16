@@ -1,6 +1,5 @@
 import { groupBy, mapValues, sortBy, uniqWith } from "lodash-es";
 
-import rgaa from "../../criteres.json";
 import { ReportStoreState } from "../../store";
 import {
   AuditReport,
@@ -24,7 +23,8 @@ export type ReportErrors = {
 export function getReportErrors(
   report: ReportStoreState,
   quickWinFilter: boolean,
-  userImpactFilters: Array<CriterionResultUserImpact | null>
+  userImpactFilters: Array<CriterionResultUserImpact | null>,
+  criteria: any
 ): ReportErrors[] {
   const resultsGroupedByPage = {
     // include pages with no errors
@@ -61,7 +61,7 @@ export function getReportErrors(
             mapValues(groupBy(results, "topic"), (results, topicNumber) => {
               return {
                 topic: Number(topicNumber),
-                name: getTopicName(Number(topicNumber)),
+                name: getTopicName(Number(topicNumber), criteria),
                 errors: sortBy(
                   results.filter((r) => !r.transverse),
                   "criterium"
@@ -89,7 +89,8 @@ export type ReportTransverseError = {
 
 export function getReportTransverseErrors(
   report: ReportStoreState,
-  userImpactFilters: Array<CriterionResultUserImpact | null>
+  userImpactFilters: Array<CriterionResultUserImpact | null>,
+  criteria: any
 ): ReportTransverseError[] {
   return Object.values(
     mapValues(
@@ -109,7 +110,7 @@ export function getReportTransverseErrors(
       (results, topicNumber) => {
         return {
           topic: Number(topicNumber),
-          name: getTopicName(Number(topicNumber)),
+          name: getTopicName(Number(topicNumber), criteria),
           errors: results
         };
       }
@@ -117,6 +118,6 @@ export function getReportTransverseErrors(
   );
 }
 
-function getTopicName(topicNumber: number) {
-  return rgaa.topics.find((t) => t.number === topicNumber)?.topic;
+function getTopicName(topicNumber: number, criteria: any) {
+  return criteria.topics.find((t) => t.number === topicNumber)?.topic;
 }

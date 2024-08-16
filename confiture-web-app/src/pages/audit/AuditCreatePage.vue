@@ -5,6 +5,7 @@ import { onBeforeRouteLeave } from "vue-router";
 import LeaveModal from "../../components/audit/LeaveModal.vue";
 import NewAuditContactDetails from "../../components/audit/NewAuditContactDetails.vue";
 import NewAuditPages from "../../components/audit/NewAuditPages.vue";
+import NewAuditReference from "../../components/audit/NewAuditReference.vue";
 import NewAuditType from "../../components/audit/NewAuditType.vue";
 import NewUUVReport from "../../components/audit/NewUUVReport.vue";
 import PageMeta from "../../components/PageMeta";
@@ -12,7 +13,8 @@ import { useNotifications } from "../../composables/useNotifications";
 import router from "../../router";
 import { useAuditStore, useResultsStore } from "../../store";
 import { useAccountStore } from "../../store/account";
-import { AuditType, CreateAuditRequestData } from "../../types";
+import { useReferenceStore } from "../../store/reference";
+import { AuditReference, AuditType, CreateAuditRequestData } from "../../types";
 import { A11yResult, transformUuvReport } from "../../types/uuv-report";
 import { captureWithPayloads } from "../../utils";
 
@@ -66,6 +68,7 @@ const accountStore = useAccountStore();
 // Steps management
 const currentStep = ref(0);
 const steps = [
+  "Choisissez un type de référentiel",
   "A partir de UUV",
   "Choisissez un type d’audit",
   "Renseignez l’échantillon des pages à auditer",
@@ -82,6 +85,7 @@ const audit = ref<CreateAuditRequestData>({
   pages: [{ name: "", url: "" }],
   auditorEmail: accountStore.account?.email ?? "",
   auditorName: accountStore.account?.name ?? "",
+  auditReference: AuditReference.RAWEB,
   result: undefined
 });
 
@@ -124,16 +128,28 @@ async function updateAudit(uuvReport: A11yResult) {
   if (uuvReport) {
     audit.value.result = { data: transformUuvReport(uuvReport, pageId) };
   }
-  submitStep(audit.value);
+  await submitStep(audit.value);
 }
+
+async function updateReference(payload: Partial<CreateAuditRequestData>) {
+  await referenceStore.fetchReference(
+    payload.auditReference ?? AuditReference.RAWEB
+  );
+  await submitStep(payload);
+}
+
 async function submitStep(payload: Partial<CreateAuditRequestData>) {
   audit.value = {
     ...audit.value,
     ...payload
   };
-
   if (currentStep.value === steps.length - 1) {
     submitAuditSettings();
+  } else if (
+    audit.value.auditReference === AuditReference.RAAM &&
+    currentStep.value === 0
+  ) {
+    currentStep.value += 2;
   } else {
     currentStep.value += 1;
 
@@ -145,6 +161,7 @@ async function submitStep(payload: Partial<CreateAuditRequestData>) {
 // Final submission
 const isSubmitting = ref(false);
 const auditStore = useAuditStore();
+const referenceStore = useReferenceStore();
 const resultsStore = useResultsStore();
 const notify = useNotifications();
 
@@ -170,8 +187,9 @@ function submitAuditSettings() {
         auditStore.showAuditEmailAlert = true;
       }
       if (
-        audit.value.result?.data.length &&
-        audit.value.result?.data.length > 0
+        audit.value.result?.data &&
+        audit.value.result.data.length &&
+        audit.value.result.data.length > 0
       ) {
         audit.value.result.data.forEach(
           (value) => (value.pageId = auditResult.pages[0].id)
@@ -195,7 +213,6 @@ function submitAuditSettings() {
             data.userImpact = auditUpdated.userImpact;
           }
         }) ?? [];
-        console.log(resultsStore.allResults);
         await resultsStore.updateResults(
           auditResult.editUniqueId,
           resultsStore.allResults ?? []
@@ -223,7 +240,14 @@ function submitAuditSettings() {
 
 // Previous step button
 async function goToPreviousStep() {
-  currentStep.value -= 1;
+  if (
+    audit.value.auditReference === AuditReference.RAAM &&
+    currentStep.value === 2
+  ) {
+    currentStep.value -= 2;
+  } else {
+    currentStep.value -= 1;
+  }
 
   await nextTick();
   stepHeadingRef.value?.focus();
@@ -251,19 +275,31 @@ async function goToPreviousStep() {
         :data-fr-steps="steps.length"
       />
     </div>
-    <NewUUVReport
+    <NewAuditReference
       v-if="currentStep === 0"
+      :audit-reference="audit.auditReference"
+      @submit="updateReference"
+    />
+    <NewUUVReport
+      v-if="
+        (audit.auditReference === AuditReference.RAWEB ||
+          audit.auditReference === AuditReference.RGAA) &&
+        currentStep === 1
+      "
       @upload-file="updateAudit"
+      @previous="goToPreviousStep"
       @submit="submitStep"
     />
     <NewAuditType
-      v-if="currentStep === 1"
+      v-if="currentStep === 2"
+      :audit-reference="audit.auditReference"
       :audit-type="audit.auditType"
       :procedure-name="audit.procedureName"
+      @previous="goToPreviousStep"
       @submit="submitStep"
     />
     <NewAuditPages
-      v-else-if="currentStep === 2"
+      v-else-if="currentStep === 3"
       :audit-type="audit.auditType"
       :pages="audit.pages"
       @previous="goToPreviousStep"
@@ -271,7 +307,7 @@ async function goToPreviousStep() {
       @change="pagesArePristine = false"
     />
     <NewAuditContactDetails
-      v-else-if="currentStep === 3"
+      v-else-if="currentStep === 4"
       :email="audit.auditorEmail"
       :name="audit.auditorName"
       @previous="goToPreviousStep"

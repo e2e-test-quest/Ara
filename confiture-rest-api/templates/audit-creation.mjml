@@ -17,7 +17,7 @@
         <mj-text>Vous trouverez ci-dessous le lien permettant d’accéder aux documents suivants :</mj-text>
         <mj-text>- Audit {{ procedureName }}</mj-text>
         <mj-text>- Rapport d’audit (généré automatiquement)</mj-text>
-        <mj-text padding-bottom="12px">- Déclaration d’accessibilité (dans le cas d’un audit 106 critères).</mj-text>
+        <mj-text padding-bottom="12px">- Déclaration d’accessibilité (dans le cas d’un audit complet).</mj-text>
         <mj-text padding-bottom="32px" font-weight="700">Pensez-bien à conserver ces liens, c’est le seul moyen d’accéder à vos documents.</mj-text>
       </mj-column>
     </mj-section>

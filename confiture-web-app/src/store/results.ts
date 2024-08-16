@@ -204,19 +204,6 @@ export const useResultsStore = defineStore("results", {
         if (!this.data) {
           return;
         }
-        console.log(
-          "data",
-          this.data,
-          update.pageId,
-          update.topic,
-          update.criterium
-        );
-        console.log(
-          "data2",
-          this.data[update.pageId],
-          this.data[update.pageId][update.topic],
-          this.data[update.pageId][update.topic][update.criterium]
-        );
         previousResults.push(
           this.data[update.pageId][update.topic][update.criterium]
         );
@@ -295,6 +282,7 @@ export const useResultsStore = defineStore("results", {
           }
         })
         .catch((err) => {
+          console.error(err);
           rollbackResults();
           throw err;
         })

@@ -222,6 +222,7 @@ describe("uuvReport", () => {
       {
         compliantComment: "",
         criterium: 1,
+        exampleImages: [],
         notApplicableComment: "",
         notCompliantComment:
           '# 1.1.1\n## Erreurs\n### Erreur 1\n#### Selecteur CSS\n`html > body > main > img:nth-of-type(1)`\n#### Html\n`<img src="https://orange-opensource.github.io/uuv/img/uuv.png" class="h-32px m-16px w-32px" alt="">`\n### Erreur 2\n#### Selecteur CSS\n`html > body > main > img:nth-of-type(2)`\n#### Html\n`<img src="https://orange-opensource.github.io/uuv/img/uuv.png" class="h-32px m-16px w-32px">`# 1.1.2\n## Erreurs\n### Erreur 1\n#### Selecteur CSS\n`html > body > main > map:nth-of-type(1) > area:nth-of-type(3)`\n#### Html\n`<area shape="poly" coords="209,249,49,249,130,139" href="https://developer.mozilla.org/docs/Web/JavaScript" target="_blank">`\n### Erreur 2\n#### Selecteur CSS\n`html > body > main > map:nth-of-type(1) > area:nth-of-type(4)`\n#### Html\n`<area shape="poly" coords="48,249,0,96,129,138" href="https://developer.mozilla.org/docs/Web/API" target="_blank">`\n### Erreur 3\n#### Selecteur CSS\n`html > body > main > map:nth-of-type(1) > area:nth-of-type(5)`\n#### Html\n`<area shape="poly" coords="0,95,128,0,128,137" href="https://developer.mozilla.org/docs/Web/CSS" target="_blank">`',
@@ -233,8 +234,9 @@ describe("uuvReport", () => {
         userImpact: null
       },
       {
-        compliantComment: "# 1.2.1",
+        compliantComment: "",
         criterium: 2,
+        exampleImages: [],
         notApplicableComment: "",
         notCompliantComment: "",
         pageId: 1,
@@ -247,6 +249,7 @@ describe("uuvReport", () => {
       {
         compliantComment: "",
         criterium: 3,
+        exampleImages: [],
         notApplicableComment:
           "# 1.3.1\n## Vérifications manuelles\n### Vérification 1\n#### Sélecteur CSS\n`html > body > main > img:nth-of-type(1)`\n#### Dom Html\n##### Element\n`undefined`\n##### Elements lié\n#### Help\n`https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.3.1`\n### Vérification 2\n#### Sélecteur CSS\n`html > body > main > img:nth-of-type(3)`\n#### Dom Html\n##### Element\n`undefined`\n##### Elements lié\n#### Attributes\n`aria-label=je ne suis pas pertinent, alt=logo UUV`\n#### Help\n`https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.3.1`\n### Vérification 3\n#### Sélecteur CSS\n`html > body > main > img:nth-of-type(4)`\n#### Dom Html\n##### Element\n`undefined`\n##### Elements lié\n#### Attributes\n`aria-label=je ne suis pas pertinent non plus`\n#### Help\n`https://accessibilite.numerique.gouv.fr/methode/criteres-et-tests/#1.3.1`",
         notCompliantComment: "",

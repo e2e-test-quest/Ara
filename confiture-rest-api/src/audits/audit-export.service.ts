@@ -11,7 +11,7 @@ import { Readable } from "stream";
 import * as XLSX from "xlsx";
 
 import { AuditService } from "./audit.service";
-import { CRITERIA_BY_AUDIT_TYPE } from "./criteria";
+import { AuditReference, getCriteriaByAuditTypeAndReference } from "./criteria";
 
 XLSX.stream.set_readable(Readable);
 
@@ -45,7 +45,10 @@ export class AuditExportService {
       (r) => "" + r.topic + "." + r.criterium
     );
 
-    const criteria = CRITERIA_BY_AUDIT_TYPE[audit.auditType];
+    const criteria = getCriteriaByAuditTypeAndReference(
+      audit.auditType,
+      AuditReference[audit.auditReference as keyof typeof AuditReference]
+    );
 
     // Tests results
     criteria.forEach((c) => {

@@ -1,4 +1,5 @@
 import {
+  AuditType,
   CriterionResultStatus,
   CriterionResultUserImpact
 } from "@prisma/client";
@@ -12,7 +13,6 @@ import {
   IsOptional,
   IsPositive,
   IsString,
-  Max,
   Min,
   registerDecorator,
   ValidateNested,
@@ -20,15 +20,13 @@ import {
   ValidationOptions
 } from "class-validator";
 
-import { CRITERIA } from "../criteria";
-
 /** Validates the criterium property to make sure the criterium exists in the RAWEB. */
 export function IsRgaaCriterium(validationOptions?: ValidationOptions) {
   return function (
     object: Pick<UpdateResultsItem, "topic" | "criterium">,
     propertyName: string
   ) {
-    registerDecorator({
+    /* registerDecorator({
       name: "isRgaaCriterium",
       target: object.constructor,
       propertyName: propertyName,
@@ -37,13 +35,13 @@ export function IsRgaaCriterium(validationOptions?: ValidationOptions) {
       validator: {
         validate(value: any, args: ValidationArguments) {
           const { topic } = args.object as UpdateResultsItem;
-          return !!CRITERIA.find(
+          return !!CRITERIA_BY_AUDIT_TYPE[AuditType.FULL].find(
             (criterium) =>
               criterium.criterium === value && criterium.topic === topic
           );
         }
       }
-    });
+    });*/
   };
 }
 
@@ -61,6 +59,7 @@ class UpdateResultsItem {
    */
   @IsInt()
   @Min(1)
+  //FIXME remettre le Max en décorator pour prendre en compte le max par référentiel
   topic: number;
 
   /**
@@ -68,10 +67,11 @@ class UpdateResultsItem {
    */
   @IsInt()
   @IsPositive()
-  @IsRgaaCriterium({
+  //FIXME rendre dynamique en fonction du référentiel
+  /*@IsRgaaCriterium({
     message:
       "topic and criterium numbers must be a valid RGAA criterium combination"
-  })
+  })*/
   criterium: number;
 
   // DATA

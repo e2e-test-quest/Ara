@@ -17,10 +17,10 @@ Installer les dépendances :
 yarn install
 ```
 
-Générer les fichiers requis du RAWEB (critères et tests et méthodologies) :
+Générer les fichiers requis du RAWEB, RAAM et RAPDF (critères et tests et méthodologies) :
 
 ```sh
-yarn generate:raweb
+yarn generate:reference
 ```
 
 ## Développement
