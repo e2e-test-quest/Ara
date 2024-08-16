@@ -12,22 +12,30 @@ import { StatDonutTheme } from "../../components/StatDonut.vue";
 import BackLink from "../../components/ui/BackLink.vue";
 import { useAuditStats } from "../../composables/useAuditStats";
 import { useWrappedFetch } from "../../composables/useWrappedFetch";
-import rgaa from "../../criteres.json";
-import { CRITERIA_BY_AUDIT_TYPE } from "../../criteria";
 import { useAuditStore, useFiltersStore, useResultsStore } from "../../store";
-import { AuditPage, AuditType, CriteriumResultStatus } from "../../types";
-import { getCriteriaCount, pluralize } from "../../utils";
+import { useReferenceStore } from "../../store/reference";
+import {
+  AuditPage,
+  AuditReference,
+  AuditType,
+  CriteriumResultStatus
+} from "../../types";
+import { pluralize } from "../../utils";
 
 const route = useRoute();
 
 const uniqueId = computed(() => route.params.uniqueId as string);
 const auditStore = useAuditStore();
+const referenceStore = useReferenceStore();
 
 useWrappedFetch(async () => {
   resultsStore.$reset();
   await auditStore.fetchAuditIfNeeded(uniqueId.value);
+  await referenceStore.fetchReference(
+    auditStore.currentAudit?.auditReference ?? AuditReference.RAWEB
+  );
   await resultsStore.fetchResults(uniqueId.value);
-  auditStore.updateCurrentPageId(
+  await auditStore.updateCurrentPageId(
     auditStore.currentAudit?.pages.at(0)?.id ?? null
   );
 }, true);
@@ -39,14 +47,15 @@ const topics = computed(() => {
   if (!auditStore.currentAudit?.auditType) {
     return [];
   }
-
   return (
-    rgaa.topics
+    referenceStore.criteria.topics
       // hide topics not present in audit type
       .filter((topic) => {
-        return CRITERIA_BY_AUDIT_TYPE[auditStore.currentAudit!.auditType!].find(
-          (criterium) => criterium.topic === topic.number
-        );
+        return referenceStore
+          .getCriteriaByAuditType()
+          [auditStore.currentAudit!.auditType!].find(
+            (criterium) => criterium.topic === topic.number
+          );
       })
       .map((topic) => {
         // Every results for the current topic
@@ -94,7 +103,7 @@ const headerInfos = computed(() => [
           title: "Taux global de conformité",
           description: auditIsInProgress.value
             ? "(Disponible à la fin de l’audit)"
-            : "RAWEB 1",
+            : auditStore.currentAudit.auditReference,
           value: auditIsInProgress.value ? 0 : complianceLevel.value,
           total: 100,
           unit: "%",
@@ -113,13 +122,19 @@ const headerInfos = computed(() => [
       blockingCriteriaCount.value
     )} pour l’usager`,
     value: notCompliantCriteriaCount.value,
-    total: getCriteriaCount(auditStore.currentAudit?.auditType as AuditType),
+    total:
+      referenceStore.getCriteriaByAuditType()[
+        auditStore.currentAudit?.auditType as AuditType
+      ].length,
     theme: "red" as StatDonutTheme
   },
   {
     title: "Critères<br/> conformes",
     value: compliantCriteriaCount.value,
-    total: getCriteriaCount(auditStore.currentAudit?.auditType as AuditType),
+    total:
+      referenceStore.getCriteriaByAuditType()[
+        auditStore.currentAudit?.auditType as AuditType
+      ].length,
     theme: "green" as StatDonutTheme
   }
 ]);
@@ -230,6 +245,7 @@ const tabsData = computed((): TabData[] => {
     <AuditGenerationHeader
       ref="auditGenerationHeader"
       :audit-name="auditStore.currentAudit.procedureName"
+      :audit-reference="auditStore.currentAudit.auditReference"
       :key-infos="headerInfos"
       :audit-publication-date="auditStore.currentAudit.publicationDate"
       :audit-edition-date="auditStore.currentAudit.editionDate"

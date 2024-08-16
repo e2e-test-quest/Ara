@@ -39,7 +39,7 @@ model Recipent {
 enum AuditType {
   FAST // 25 criteria
   COMPLEMENTARY // 50 criteria
-  FULL // 106 criteria
+  FULL
 }
 
 model Audit {
@@ -51,6 +51,7 @@ model Audit {
   /// @DtoEntityHidden
   pages                    AuditedPage[]
   auditorName              String?
+  auditReference           String         @default("RAWEB")
   auditorEmail             String?
   showAuditorEmailInReport Boolean       @default(false)
 
@@ -111,7 +112,6 @@ model AuditedPage {
   name  String
   url   String
 
-  audit         Audit?  @relation(fields: [auditUniqueId], references: [editUniqueId], onDelete: Cascade)
   auditUniqueId String?
 
   results CriterionResult[]

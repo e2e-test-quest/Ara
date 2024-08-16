@@ -13,21 +13,21 @@ import TopLink from "../../components/ui/TopLink.vue";
 import { useWrappedFetch } from "../../composables/useWrappedFetch";
 import { useReportStore } from "../../store";
 import { AuditStatus, CriteriumResultStatus } from "../../types";
-import { formatBytes, formatDate, getAuditStatus, slugify } from "../../utils";
+import { formatBytes, formatDate, slugify } from "../../utils";
 
-const report = useReportStore();
+const reportStore = useReportStore();
 
 const route = useRoute();
 const uniqueId = route.params.uniqueId as string;
 
-useWrappedFetch(() => report.fetchReport(uniqueId));
+useWrappedFetch(() => reportStore.fetchReport(uniqueId));
 
 const hasNotes = computed(() => {
-  return !!report.data?.notes || report.data?.notesFiles.length;
+  return !!reportStore.data?.notes || reportStore.data?.notesFiles.length;
 });
 
 const hasCompliantOrNotApplicableComments = computed(() => {
-  return report.data?.results.some((r) => {
+  return reportStore.data?.results.some((r) => {
     return (
       (r.status === CriteriumResultStatus.COMPLIANT && r.compliantComment) ||
       (r.status === CriteriumResultStatus.NOT_APPLICABLE &&
@@ -62,11 +62,11 @@ function hideReportAlert() {
 const onboardingModalRef = ref<InstanceType<typeof OnboardingModal>>();
 
 watch(
-  () => report.data,
+  () => reportStore.data,
   (report) => {
     if (report) {
       if (
-        getAuditStatus(report) !== AuditStatus.IN_PROGRESS &&
+        reportStore.getAuditStatus !== AuditStatus.IN_PROGRESS &&
         localStorage.getItem("confiture:seen-onboarding") !== "true"
       ) {
         onboardingModalRef.value?.show();
@@ -108,21 +108,21 @@ function handleTabChange(tab: { title: string }) {
 const csvExportUrl = computed(() => `/api/reports/${uniqueId}/exports/csv`);
 
 const csvExportFilename = computed(() => {
-  if (!report.data?.procedureName) {
+  if (!reportStore.data?.procedureName) {
     return "audit.csv";
   }
-  return `audit-${slugify(report.data.procedureName)}.csv`;
+  return `audit-${slugify(reportStore.data.procedureName)}.csv`;
 });
 
 const csvExportSizeEstimation = computed(() => {
-  return 502 + (report.data?.pageDistributions.length || 0) * 318;
+  return 502 + (reportStore.data?.pageDistributions.length || 0) * 318;
 });
 
 const siteUrl = computed(() => {
-  if (report.data) {
+  if (reportStore.data) {
     return (
-      report.data.procedureUrl ||
-      new URL(report.data.context.samples[0].url).origin
+      reportStore.data.procedureUrl ||
+      new URL(reportStore.data.context.samples[0].url).origin
     );
   }
 
@@ -133,7 +133,7 @@ const siteUrl = computed(() => {
 <template>
   <div
     v-if="
-      report.data && getAuditStatus(report.data) === AuditStatus.IN_PROGRESS
+      reportStore.data && reportStore.getAuditStatus === AuditStatus.IN_PROGRESS
     "
     class="fr-pt-1w in-progress-alert"
   >
@@ -188,38 +188,38 @@ const siteUrl = computed(() => {
     </div>
   </div>
 
-  <template v-if="report.data">
+  <template v-if="reportStore.data">
     <PageMeta
       title="Rapport d’audit accessibilité"
-      :description="`Découvrez la synthèse de l'audit de ${report.data?.procedureName}.`"
+      :description="`Découvrez la synthèse de l'audit de ${reportStore.data?.procedureName}.`"
     />
 
     <OnboardingModal
       ref="onboardingModalRef"
-      :accessibility-rate="report.data.accessibilityRate"
+      :accessibility-rate="reportStore.data.accessibilityRate"
       @close="onOnboardingClose"
     />
 
     <div class="fr-mb-6w fr-mb-md-12w header">
-      <p class="fr-text--lead fr-mb-2w">{{ report.data.procedureName }}</p>
+      <p class="fr-text--lead fr-mb-2w">{{ reportStore.data.procedureName }}</p>
 
       <p
         v-if="
-          getAuditStatus(report.data) === AuditStatus.IN_PROGRESS &&
-          report.data.creationDate
+          reportStore.getAuditStatus === AuditStatus.IN_PROGRESS &&
+          reportStore.data.creationDate
         "
         class="fr-text--light fr-mb-4w dates"
       >
-        Commencé le {{ formatDate(report.data.creationDate) }}
+        Commencé le {{ formatDate(reportStore.data.creationDate) }}
       </p>
 
       <p
-        v-else-if="report.data.publishDate"
+        v-else-if="reportStore.data.publishDate"
         class="fr-text--light fr-mb-4w dates"
       >
-        Publié le {{ formatDate(report.data.publishDate) }}
-        <template v-if="report.data.updateDate">
-          - Mis à jour le {{ formatDate(report.data.updateDate) }}
+        Publié le {{ formatDate(reportStore.data.publishDate) }}
+        <template v-if="reportStore.data.updateDate">
+          - Mis à jour le {{ formatDate(reportStore.data.updateDate) }}
         </template>
       </p>
 
@@ -233,16 +233,17 @@ const siteUrl = computed(() => {
       </p>
       <p class="fr-mb-1v">
         Type d’audit :
-        <strong>{{ report.data.criteriaCount.total }} critères</strong>
+        <strong>{{ reportStore.data.criteriaCount.total }} critères</strong>
       </p>
       <p class="fr-mb-1v">
-        Référentiel : <strong>{{ report.data.context.referencial }}</strong>
+        Référentiel :
+        <strong>{{ reportStore.data.context.referencial }}</strong>
       </p>
-      <p v-if="report.data.context.auditorName" class="fr-mb-1v">
+      <p v-if="reportStore.data.context.auditorName" class="fr-mb-1v">
         Auditeur ou auditrice :
-        <strong>{{ report.data.context.auditorName }}</strong>
+        <strong>{{ reportStore.data.context.auditorName }}</strong>
       </p>
-      <p v-if="report.data.procedureInitiator">
+      <p v-if="reportStore.data.procedureInitiator">
         Déclaration d’accessibilité :
         <RouterLink
           :to="{ name: 'a11y-statement', params: { uniqueId } }"

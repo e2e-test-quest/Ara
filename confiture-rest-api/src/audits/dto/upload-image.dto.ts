@@ -29,9 +29,10 @@ export class UploadImageDto {
   @Type(() => Number)
   @IsInt()
   @IsPositive()
-  @IsRgaaCriterium({
+  // FIXME à remettre
+  /*@IsRgaaCriterium({
     message:
       "topic and criterium numbers must be a valid RGAA criterium combination"
-  })
+  })*/
   criterium: number;
 }

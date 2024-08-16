@@ -3,7 +3,12 @@ import { nextTick, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { useAccountStore } from "../../store/account";
-import { AuditPage, AuditType, CreateAuditRequestData } from "../../types";
+import {
+  AuditPage,
+  AuditReference,
+  AuditType,
+  CreateAuditRequestData
+} from "../../types";
 import { formatEmail } from "../../utils";
 import BackLink from "../ui/BackLink.vue";
 import DsfrField from "../ui/DsfrField.vue";
@@ -24,6 +29,7 @@ const emit = defineEmits<{
       pages: Omit<AuditPage, "id" | "order">[];
       auditorName: string;
       auditorEmail: string;
+      auditReference: AuditReference;
     }
   ): void;
   (e: "change"): void;
@@ -65,6 +71,7 @@ const procedureName = ref(props.audit?.procedureName);
 const pages = ref(props.audit?.pages);
 const auditorEmail = ref(props.audit?.auditorEmail);
 const auditorName = ref(props.audit?.auditorName ?? "");
+const auditReference = ref(props.audit?.auditReference);
 
 const pagesSampleRef = ref<InstanceType<typeof PagesSample>>();
 /**
@@ -82,7 +89,8 @@ function onSubmit() {
     procedureName: procedureName.value,
     pages: pages.value.map((p) => ({ ...p, url: p.url })),
     auditorName: auditorName.value,
-    auditorEmail: formatEmail(auditorEmail.value)
+    auditorEmail: formatEmail(auditorEmail.value),
+    auditReference: auditReference.value
   });
 }
 

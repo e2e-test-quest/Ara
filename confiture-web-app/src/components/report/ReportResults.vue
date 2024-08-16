@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { useReportStore } from "../../store";
 import { AuditStatus, AuditType } from "../../types";
-import { getAuditStatus, pluralize, slugify } from "../../utils";
+import { pluralize, slugify } from "../../utils";
 import { StatDonutTheme } from "../StatDonut.vue";
 import SummaryCard from "../SummaryCard.vue";
 
@@ -17,7 +17,7 @@ const stats = computed(() => {
             title: "Taux global de conformité",
             description: auditInProgress.value
               ? "(Disponible à la fin de l’audit)"
-              : "RAWEB 1",
+              : aud,
             value: auditInProgress.value ? 0 : report.data?.accessibilityRate,
             total: 100,
             unit: "%",
@@ -88,7 +88,7 @@ const topicDistributionTableData = {
 };
 
 const auditInProgress = computed(
-  () => !!report.data && getAuditStatus(report.data) === AuditStatus.IN_PROGRESS
+  () => !!report.data && report.getAuditStatus === AuditStatus.IN_PROGRESS
 );
 </script>
 
@@ -153,7 +153,7 @@ const auditInProgress = computed(
                 <thead>
                   <tr>
                     <th
-                      v-for="header in pageDistributionTableData.data[0]"
+                      v-for="header in pageDistributionTableData.criteria[0]"
                       :key="header"
                       scope="col"
                     >
@@ -163,7 +163,9 @@ const auditInProgress = computed(
                 </thead>
                 <tbody>
                   <tr
-                    v-for="(row, i) in pageDistributionTableData.data.slice(1)"
+                    v-for="(row, i) in pageDistributionTableData.criteria.slice(
+                      1
+                    )"
                     :key="i"
                   >
                     <td>

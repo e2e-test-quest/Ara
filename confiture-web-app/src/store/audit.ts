@@ -194,6 +194,7 @@ export const useAuditStore = defineStore("audit", {
           consultUniqueId: newAudit.consultUniqueId,
           creationDate: newAudit.creationDate!,
           editUniqueId: newAudit.editUniqueId,
+          auditReference: newAudit.auditReference,
           procedureName: newAudit.procedureName,
           status: originalAuditListingItem.status,
           estimatedCsvSize: originalAuditListingItem.estimatedCsvSize,

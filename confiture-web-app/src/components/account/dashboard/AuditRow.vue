@@ -3,13 +3,19 @@ import { computed, ref } from "vue";
 
 import { useNotifications } from "../../../composables/useNotifications";
 import { useAuditStore } from "../../../store";
-import { AuditStatus, AuditType } from "../../../types";
+import {
+  fetchReferenceFile,
+  RAWEB_COMPLEMENTARY_CRITERIA,
+  RAWEB_FAST_CRITERIA,
+  RGAA_COMPLEMENTARY_CRITERIA,
+  RGAA_FAST_CRITERIA
+} from "../../../store/reference";
+import { AuditReference, AuditStatus, AuditType } from "../../../types";
 import { AccountAudit } from "../../../types/account";
 import {
   captureWithPayloads,
   formatBytes,
   formatDate,
-  getCriteriaCount,
   slugify
 } from "../../../utils";
 import DeleteModal from "../../audit/DeleteModal.vue";
@@ -25,9 +31,46 @@ const props = defineProps<{
 const notify = useNotifications();
 const auditStore = useAuditStore();
 
+const referenceFile = fetchReferenceFile(
+  props.audit.auditReference ?? AuditReference.RAWEB
+);
+
 const isInProgress = computed(
   () => props.audit.status === AuditStatus.IN_PROGRESS
 );
+
+const criteriaCount = computed(() => {
+  switch (props.audit.auditType) {
+    case AuditType.FAST:
+      switch (props.audit.auditReference) {
+        case AuditReference.RAWEB:
+          return RAWEB_FAST_CRITERIA.length;
+        case AuditReference.RGAA:
+          return RGAA_FAST_CRITERIA.length;
+        case AuditReference.RAAM:
+          return 0;
+      }
+      break;
+    case AuditType.COMPLEMENTARY:
+      switch (props.audit.auditReference) {
+        case AuditReference.RAWEB:
+          return RAWEB_COMPLEMENTARY_CRITERIA.length;
+        case AuditReference.RGAA:
+          return RGAA_COMPLEMENTARY_CRITERIA.length;
+        case AuditReference.RAAM:
+          return 0;
+      }
+      break;
+    default:
+      return referenceFile.criteria?.topics.flatMap((topic) =>
+        topic.criteria.map((c) => ({
+          topic: topic.number,
+          criterium: c.criterium.number
+        }))
+      ).length;
+      break;
+  }
+});
 
 const optionsDropdownRef = ref<InstanceType<typeof Dropdown>>();
 
@@ -161,7 +204,19 @@ function copyStatementLink(uniqueId: string) {
     >
       <strong>{{ audit.procedureName }}</strong>
     </RouterLink>
-
+    <p
+      class="fr-badge fr-badge--sm audit-reference"
+      :class="{
+        'fr-badge--brown-opera': audit.auditReference === AuditReference.RGAA,
+        'fr-badge--green-bourgeon':
+          audit.auditReference === AuditReference.RAWEB,
+        'fr-badge--orange-terre-battue':
+          audit.auditReference === AuditReference.RAAM
+      }"
+    >
+      <span class="fr-sr-only">Référentiel </span>
+      {{ audit.auditReference }}
+    </p>
     <!-- Status -->
     <p
       class="fr-badge fr-badge--sm audit-status"
@@ -184,7 +239,8 @@ function copyStatementLink(uniqueId: string) {
     <!-- Type -->
     <p class="fr-mb-0 audit-type">
       <span class="fr-sr-only">Type </span>
-      {{ getCriteriaCount(audit.auditType) }} critères
+      {{ criteriaCount }}
+      critères
     </p>
 
     <!-- Compliance level -->
@@ -231,7 +287,7 @@ function copyStatementLink(uniqueId: string) {
           role="tooltip"
           aria-hidden="true"
         >
-          Seul l'audit 106 critères permet d'obtenir un taux de conformité
+          Seul l'audit complet permet d'obtenir un taux de conformité
         </span>
       </p>
     </div>
@@ -412,7 +468,7 @@ function copyStatementLink(uniqueId: string) {
 <style scoped>
 .grid {
   display: grid;
-  grid-template-columns: 2fr 0.75fr 0.75fr 0.75fr 1.25fr 1.5fr 1fr;
+  grid-template-columns: 2fr 0.5fr 0.75fr 0.75fr 0.75fr 1.25fr 1.5fr 1fr;
   grid-gap: 1rem;
   align-items: center;
   border: 1px solid var(--border-default-grey);

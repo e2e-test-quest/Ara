@@ -2,12 +2,14 @@
 import { computed, ref } from "vue";
 
 import { useReportStore } from "../../store";
+import { useReferenceStore } from "../../store/reference";
 import { CriterionResultUserImpact, CriteriumResultStatus } from "../../types";
 import { getReportErrors, getReportTransverseErrors } from "./getReportErrors";
 import ReportCriteria from "./ReportCriteria.vue";
 import ReportErrorCriterium from "./ReportErrorCriterium.vue";
 
 const report = useReportStore();
+const referenceStore = useReferenceStore();
 
 // Filters
 const defaultUserImpactFillters = [
@@ -74,8 +76,21 @@ function resetFilters() {
 <template>
   <ReportCriteria
     v-if="report.data"
-    :pages-data="getReportErrors(report, quickWinFilter, userImpactFilters)"
-    :transverse-data="getReportTransverseErrors(report, userImpactFilters)"
+    :pages-data="
+      getReportErrors(
+        report,
+        quickWinFilter,
+        userImpactFilters,
+        referenceStore.criteria
+      )
+    "
+    :transverse-data="
+      getReportTransverseErrors(
+        report,
+        userImpactFilters,
+        referenceStore.criteria
+      )
+    "
   >
     <template #filter>
       <div class="fr-text--bold fr-text--xl fr-mb-2w filter-title">Filtres</div>
@@ -174,7 +189,13 @@ function resetFilters() {
 
     <template #transverse-data>
       <section
-        v-if="getReportTransverseErrors(report, userImpactFilters).length"
+        v-if="
+          getReportTransverseErrors(
+            report,
+            userImpactFilters,
+            referenceStore.criteria
+          ).length
+        "
         class="fr-mb-8w"
       >
         <h2 id="all-pages" class="fr-h3 fr-mb-2w page-title">
@@ -184,7 +205,8 @@ function resetFilters() {
         <div
           v-for="(topic, i) in getReportTransverseErrors(
             report,
-            userImpactFilters
+            userImpactFilters,
+            referenceStore.criteria
           )"
           :key="topic.topic"
           :class="{ 'fr-mt-9v': i !== 0 }"
@@ -208,7 +230,8 @@ function resetFilters() {
         v-for="page in getReportErrors(
           report,
           quickWinFilter,
-          userImpactFilters
+          userImpactFilters,
+          referenceStore.criteria
         )"
         :key="page.id"
         class="fr-mb-8w"

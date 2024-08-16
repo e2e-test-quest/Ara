@@ -19,7 +19,7 @@ export interface AuditReport {
   notInScopeContent?: string;
   notes?: string;
   notesFiles: AuditFile[];
-
+  //FIXME ajouter le référentiel dans le rapport
   auditType: AuditType;
 
   context: AuditReportContext;

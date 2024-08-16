@@ -15,14 +15,17 @@ import sharp from "sharp";
 import { omit, pick, setWith, uniqBy } from "lodash";
 
 import { PrismaService } from "../prisma.service";
-import * as RAWEB1 from "../raweb1.json";
 import { AuditReportDto } from "./dto/audit-report.dto";
 import { CreateAuditDto } from "./dto/create-audit.dto";
-import { CRITERIA_BY_AUDIT_TYPE } from "./criteria";
 import { FileStorageService } from "./file-storage.service";
 import { UpdateAuditDto } from "./dto/update-audit.dto";
 import { UpdateResultsDto } from "./dto/update-results.dto";
 import { PatchAuditDto } from "./dto/patch-audit.dto";
+import {
+  AuditReference,
+  getCriteriaByAuditTypeAndReference,
+  getCriteriaFile
+} from "./criteria";
 
 const AUDIT_EDIT_INCLUDE: Prisma.AuditInclude = {
   recipients: true,
@@ -60,6 +63,7 @@ export class AuditService {
 
         auditorEmail: data.auditorEmail,
         auditorName: data.auditorName,
+        auditReference: data.auditReference,
 
         pages: {
           createMany: {
@@ -154,7 +158,10 @@ export class AuditService {
     // We do not create every empty criterion result rows in the db when creating pages.
     // Instead we return the results in the database and fill missing criteria with placeholder data.
     return pages.flatMap((page) =>
-      CRITERIA_BY_AUDIT_TYPE[audit.auditType].map((criterion) => {
+      getCriteriaByAuditTypeAndReference(
+        audit.auditType,
+        AuditReference[audit.auditReference as keyof typeof AuditReference]
+      ).map((criterion) => {
         const existingResult = existingResults.find(
           (result) =>
             result.pageId === page.id &&
@@ -768,10 +775,16 @@ export class AuditService {
           auditUniqueId: audit.editUniqueId
         },
         criterium: {
-          in: CRITERIA_BY_AUDIT_TYPE[audit.auditType].map((c) => c.criterium)
+          in: getCriteriaByAuditTypeAndReference(
+            audit.auditType,
+            AuditReference[audit.auditReference as keyof typeof AuditReference]
+          ).map((c) => c.criterium)
         },
         topic: {
-          in: CRITERIA_BY_AUDIT_TYPE[audit.auditType].map((c) => c.topic)
+          in: getCriteriaByAuditTypeAndReference(
+            audit.auditType,
+            AuditReference[audit.auditReference as keyof typeof AuditReference]
+          ).map((c) => c.topic)
         }
       },
       include: {
@@ -819,7 +832,10 @@ export class AuditService {
         (compliantCriteria.length / applicableCriteria.length) * 100
       ) || 0;
 
-    const totalCriteriaCount = CRITERIA_BY_AUDIT_TYPE[audit.auditType].length;
+    const totalCriteriaCount = getCriteriaByAuditTypeAndReference(
+      audit.auditType,
+      AuditReference[audit.auditReference as keyof typeof AuditReference]
+    ).length;
 
     const report: AuditReportDto = {
       consultUniqueId: audit.consultUniqueId,
@@ -876,7 +892,7 @@ export class AuditService {
           assistiveTechnology: e.assistiveTechnology,
           browser: e.browser
         })),
-        referencial: "RAWEB 1",
+        referencial: audit.auditReference,
         samples: audit.pages
           .map((p, i) => ({
             name: p.name,
@@ -953,11 +969,14 @@ export class AuditService {
         }
       },
 
-      topicDistributions: RAWEB1.topics
-        .map((t) => {
-          const total = CRITERIA_BY_AUDIT_TYPE[audit.auditType].filter(
-            (c) => c.topic === t.number
-          ).length;
+      topicDistributions: getCriteriaFile(
+        AuditReference[audit.auditReference as keyof typeof AuditReference]
+      )
+        .topics.map((t) => {
+          const total = getCriteriaByAuditTypeAndReference(
+            audit.auditType,
+            AuditReference[audit.auditReference as keyof typeof AuditReference]
+          ).filter((c) => c.topic === t.number).length;
 
           const compliantRaw = compliantCriteria.filter(
             (c) => c[0].topic === t.number
@@ -1027,10 +1046,16 @@ export class AuditService {
           auditUniqueId: uniqueId
         },
         criterium: {
-          in: CRITERIA_BY_AUDIT_TYPE[audit.auditType].map((c) => c.criterium)
+          in: getCriteriaByAuditTypeAndReference(
+            audit.auditType,
+            AuditReference[audit.auditReference as keyof typeof AuditReference]
+          ).map((c) => c.criterium)
         },
         topic: {
-          in: CRITERIA_BY_AUDIT_TYPE[audit.auditType].map((c) => c.topic)
+          in: getCriteriaByAuditTypeAndReference(
+            audit.auditType,
+            AuditReference[audit.auditReference as keyof typeof AuditReference]
+          ).map((c) => c.topic)
         },
         status: {
           not: CriterionResultStatus.NOT_TESTED
@@ -1039,7 +1064,10 @@ export class AuditService {
     });
 
     const expectedCount =
-      CRITERIA_BY_AUDIT_TYPE[audit.auditType].length * audit.pages.length;
+      getCriteriaByAuditTypeAndReference(
+        audit.auditType,
+        AuditReference[audit.auditReference as keyof typeof AuditReference]
+      ).length * audit.pages.length;
 
     return testedCount === expectedCount;
   }
@@ -1263,6 +1291,7 @@ export class AuditService {
         procedureName: true,
         creationDate: true,
         auditType: true,
+        auditReference: true,
         editUniqueId: true,
         consultUniqueId: true,
         initiator: true,
@@ -1280,7 +1309,11 @@ export class AuditService {
       const progress =
         results.filter((r) => r.status !== CriterionResultStatus.NOT_TESTED)
           .length /
-        (CRITERIA_BY_AUDIT_TYPE[a.auditType].length * a.pages.length);
+        (getCriteriaByAuditTypeAndReference(
+          a.auditType,
+          AuditReference[a.auditReference as keyof typeof AuditReference]
+        ).length *
+          a.pages.length);
 
       let complianceLevel = null;
 
@@ -1297,9 +1330,10 @@ export class AuditService {
           return acc;
         }, {});
 
-        const results2 = CRITERIA_BY_AUDIT_TYPE[a.auditType].map(
-          (c) => resultsGroupedById[`${c.topic}.${c.criterium}`] ?? null
-        );
+        const results2 = getCriteriaByAuditTypeAndReference(
+          a.auditType,
+          AuditReference[a.auditReference as keyof typeof AuditReference]
+        ).map((c) => resultsGroupedById[`${c.topic}.${c.criterium}`] ?? null);
 
         const applicableCriteria = results2.filter(
           (criteria) =>
@@ -1329,6 +1363,7 @@ export class AuditService {
           a,
           "procedureName",
           "editUniqueId",
+          "auditReference",
           "consultUniqueId",
           "creationDate",
           "auditType"

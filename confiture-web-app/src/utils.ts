@@ -5,13 +5,7 @@ import { noop } from "lodash-es";
 import baseSlugify from "slugify";
 
 import { FileErrorMessage } from "./enums";
-import {
-  AuditReport,
-  AuditStatus,
-  AuditType,
-  CriterionResultUserImpact,
-  CriteriumResultStatus
-} from "./types";
+import { CriterionResultUserImpact, CriteriumResultStatus } from "./types";
 
 const formatter = new Intl.DateTimeFormat("fr-FR", {
   year: "numeric",
@@ -62,41 +56,6 @@ const FORMATTED_STATUS = {
  */
 export function formatStatus(status: CriteriumResultStatus): string {
   return FORMATTED_STATUS[status];
-}
-
-const CRITERIA_COUNT = {
-  [AuditType.FAST]: 25,
-  [AuditType.COMPLEMENTARY]: 50,
-  [AuditType.FULL]: 106
-};
-
-/**
- * Return the number of criteria for a given audit type.
- */
-export function getCriteriaCount(auditType: AuditType): number {
-  return CRITERIA_COUNT[auditType];
-}
-
-/**
- * Return the audit status based on:
- * - the number of results (criteria count * number of pages)
- * - the status of each criteria
- * - the completion of a11y statement
- */
-export function getAuditStatus(report: AuditReport): string {
-  if (
-    report.results.length !==
-      getCriteriaCount(report.auditType) * report.pageDistributions.length ||
-    report?.results.some((r) => r.status === CriteriumResultStatus.NOT_TESTED)
-  ) {
-    return AuditStatus.IN_PROGRESS;
-  }
-
-  if (report.procedureInitiator) {
-    return AuditStatus.PUBLISHABLE;
-  }
-
-  return AuditStatus.COMPLETED;
 }
 
 /**

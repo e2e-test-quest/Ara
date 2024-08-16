@@ -1,9 +1,8 @@
 import { defineStore } from "pinia";
 
-import rgaa from "../criteres.json";
-import { CRITERIA_BY_AUDIT_TYPE } from "../criteria";
 import { AuditType, CriteriumResultStatus } from "../types";
 import { useAuditStore } from "./audit";
+import { useReferenceStore } from "./reference";
 import { useResultsStore } from "./results";
 
 interface FiltersStoreState {
@@ -27,10 +26,10 @@ export const useFiltersStore = defineStore("filters", {
     filteredTopics() {
       const resultStore = useResultsStore();
       const auditStore = useAuditStore();
+      const referenceStore = useReferenceStore();
       const auditType = auditStore.currentAudit?.auditType ?? AuditType.FULL;
 
-      let filteredTopics = rgaa.topics as any[];
-
+      let filteredTopics = referenceStore.criteria.topics as any[];
       /**
        * Filter based on:
        * - already evaluated criteria
@@ -85,10 +84,13 @@ export const useFiltersStore = defineStore("filters", {
             .filter(
               (c: any) =>
                 // audit type filter
-                !!CRITERIA_BY_AUDIT_TYPE[auditType].find(
-                  (fc) =>
-                    fc.criterium === c.criterium.number && fc.topic === t.number
-                ) &&
+                !!referenceStore
+                  .getCriteriaByAuditType()
+                  [auditType].find(
+                    (fc) =>
+                      fc.criterium === c.criterium.number &&
+                      fc.topic === t.number
+                  ) &&
                 // status
                 (this.complianceLevels.length
                   ? this.complianceLevels.includes(c.status)

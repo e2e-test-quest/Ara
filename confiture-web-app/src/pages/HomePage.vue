@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import PageMeta from "../components/PageMeta";
 import { history } from "../router";
 import { useAccountStore } from "../store";
+import { useReferenceStore } from "../store/reference";
+import { AuditReference } from "../types";
 
 const router = useRouter();
 
@@ -23,7 +25,12 @@ onMounted(async () => {
 
 // Redirect connected user to his account
 const accountStore = useAccountStore();
+const referenceStore = useReferenceStore();
 
+const fullCriteriaCount = computed(() => {
+  referenceStore.fetchReference(AuditReference.RAWEB);
+  return referenceStore.getCriteria().length;
+});
 if (accountStore.account) {
   router.push({ name: "account-dashboard" });
 }
@@ -83,21 +90,23 @@ const steps = [
     <h1 ref="headingRef">Faire un audit d’accessibilité avec Ara</h1>
     <p class="fr-text--lg">
       Ara nécessite une bonne connaissance de la méthode technique du
-      <abbr
-        title="Référentiel d'Évaluation de l'Accessibilité Web"
-        >RAWEB</abbr
+      <abbr title="Référentiel d'Évaluation de l'Accessibilité Web">RAWEB</abbr
       >.
     </p>
     <p>
       <strong>Ce n’est pas un outil d’audit automatique.</strong>
     </p>
     <p>
-      Basé sur la dernière version du Référentiel d'Évaluation de l'Accessibilité Web (RAWEB) vous pouvez&nbsp;:
+      Basé sur la dernière version du Référentiel d'Évaluation de
+      l'Accessibilité Web (RAWEB) vous pouvez&nbsp;:
     </p>
     <ul>
       <li>Commencer par un audit rapide (25 critères)</li>
       <li>Poursuivre par un audit complémentaire (50 critères)</li>
-      <li>Faire un audit complet, dit de conformité (106 critères)</li>
+      <li>
+        Faire un audit complet, dit de conformité ({{ fullCriteriaCount }}
+        critères)
+      </li>
       <li>
         Générer votre rapport d’audit et votre déclaration d’accessibilité
       </li>

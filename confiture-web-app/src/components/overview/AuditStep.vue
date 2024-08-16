@@ -4,8 +4,9 @@ import { useRoute } from "vue-router";
 
 import { useAuditStats } from "../../composables/useAuditStats";
 import { useResultsStore } from "../../store";
+import { useReferenceStore } from "../../store/reference";
 import { Audit, AuditType } from "../../types";
-import { formatDate, getCriteriaCount, pluralize } from "../../utils";
+import { formatDate, pluralize } from "../../utils";
 import AuditProgressBar from "../audit/AuditProgressBar.vue";
 import StatDonut from "../StatDonut.vue";
 import StepCard from "./StepCard.vue";
@@ -17,6 +18,7 @@ defineProps<{
 const route = useRoute();
 const uniqueId = computed(() => route.params.uniqueId as string);
 const resultsStore = useResultsStore();
+const referenceStore = useReferenceStore();
 
 const {
   complianceLevel,
@@ -49,12 +51,12 @@ const auditIsInProgress = computed(() => {
         class="fr-h3 fr-mb-0 audit-step-title"
         aria-describedby="audit-step-status"
       >
-        Audit
+        Audit {{ audit.auditReference }}
         <p
           v-if="audit.auditType"
           class="fr-badge fr-badge--info fr-badge--no-icon"
         >
-          {{ getCriteriaCount(audit.auditType) }}
+          {{ referenceStore.getCriteriaByAuditType()[audit.auditType].length }}
           critères
         </p>
       </h2>
@@ -105,7 +107,7 @@ const auditIsInProgress = computed(() => {
 
           <div class="card-info">
             <p class="fr-text--bold fr-mb-1v">Taux global de conformité</p>
-            <p class="fr-text--xs fr-mb-0">RAWEB 1</p>
+            <p class="fr-text--xs fr-mb-0">{{ audit.auditReference }}</p>
           </div>
         </div>
         <span aria-hidden="true" class="audit-step-chart-separator" />
@@ -113,7 +115,9 @@ const auditIsInProgress = computed(() => {
       <div class="audit-step-chart">
         <StatDonut
           :value="notCompliantCriteriaCount"
-          :total="getCriteriaCount(audit.auditType)"
+          :total="
+            referenceStore.getCriteriaByAuditType()[audit.auditType].length
+          "
           theme="red"
           size="sm"
         />
@@ -143,7 +147,9 @@ const auditIsInProgress = computed(() => {
       <div class="audit-step-chart">
         <StatDonut
           :value="notApplicableCriteriaCount"
-          :total="getCriteriaCount(audit.auditType)"
+          :total="
+            referenceStore.getCriteriaByAuditType()[audit.auditType].length
+          "
           size="sm"
         />
 
@@ -156,7 +162,11 @@ const auditIsInProgress = computed(() => {
             }}
           </p>
           <p class="fr-text--xs fr-mb-0">
-            Sur {{ getCriteriaCount(audit.auditType) }} critères
+            Sur
+            {{
+              referenceStore.getCriteriaByAuditType()[audit.auditType].length
+            }}
+            critères
           </p>
         </div>
       </div>

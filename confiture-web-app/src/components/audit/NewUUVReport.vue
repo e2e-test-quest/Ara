@@ -3,10 +3,16 @@ import { CriteriumResult } from "../../types";
 import { A11yResult } from "../../types/uuv-report";
 import { readJson } from "../../utils";
 
+//FIXME rajouter props et le fichier dans l'objet de soumission pour conserver le fichier quand on retourne à la step 1
 const emit = defineEmits<{
   (e: "upload-file", uuvReport: A11yResult): void;
   (e: "submit", payload: { result: CriteriumResult[] }): void;
+  (e: "previous"): void;
 }>();
+
+function goToPreviousStep() {
+  emit("previous");
+}
 
 async function handleFileChange(event: Event) {
   const input = event.target as HTMLInputElement;
@@ -60,6 +66,13 @@ async function handleFileChange(event: Event) {
     </div>
     <div class="actions">
       <button
+        type="button"
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-arrow-left-s-line"
+        @click="goToPreviousStep"
+      >
+        Étape précédente
+      </button>
+      <button
         type="submit"
         class="fr-btn fr-btn--icon-right fr-icon-arrow-right-s-line"
       >
@@ -83,6 +96,6 @@ async function handleFileChange(event: Event) {
 
 .actions {
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
 }
 </style>

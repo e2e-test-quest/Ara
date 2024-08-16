@@ -29,5 +29,6 @@ coverage
 
 accessibilite.numerique.gouv.fr
 ReferentielAccessibiliteWeb
-src/methodologies.json
-src/criteres.json
+ReferentielAccessibiliteMobile
+src/rgaa
+src/raweb
