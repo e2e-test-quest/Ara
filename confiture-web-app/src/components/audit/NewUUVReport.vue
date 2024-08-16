@@ -3,6 +3,7 @@ import { CriteriumResult } from "../../types";
 import { A11yResult } from "../../types/uuv-report";
 import { readJson } from "../../utils";
 
+//FIXME rajouter props et le fichier dans l'objet de soumission pour conserver le fichier quand on retourne à la step 1
 const emit = defineEmits<{
   (e: "upload-file", uuvReport: A11yResult): void;
   (e: "submit", payload: { result: CriteriumResult[] }): void;
@@ -95,6 +96,6 @@ async function handleFileChange(event: Event) {
 
 .actions {
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
 }
 </style>

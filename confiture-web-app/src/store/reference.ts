@@ -13,7 +13,7 @@ export interface ReferenceStoreState {
   reference: AuditReference | null;
 }
 
-const RGAA_FAST_CRITERIA = [
+export const RGAA_FAST_CRITERIA = [
   { topic: 1, criterium: 1 },
   { topic: 3, criterium: 1 },
   { topic: 4, criterium: 1 },
@@ -40,6 +40,114 @@ const RGAA_FAST_CRITERIA = [
   { topic: 12, criterium: 8 },
   { topic: 12, criterium: 9 }
 ];
+
+export const RAWEB_FAST_CRITERIA = [
+  { topic: 1, criterium: 1 },
+  { topic: 1, criterium: 2 },
+  { topic: 1, criterium: 3 },
+  { topic: 1, criterium: 4 },
+  { topic: 1, criterium: 5 },
+  { topic: 1, criterium: 6 },
+  { topic: 1, criterium: 7 },
+  { topic: 2, criterium: 1 },
+  { topic: 3, criterium: 1 },
+  { topic: 3, criterium: 2 },
+  { topic: 4, criterium: 1 },
+  { topic: 4, criterium: 2 },
+  { topic: 4, criterium: 3 },
+  { topic: 4, criterium: 4 },
+  { topic: 4, criterium: 8 },
+  { topic: 4, criterium: 9 },
+  { topic: 4, criterium: 10 },
+  { topic: 4, criterium: 11 },
+  { topic: 5, criterium: 6 },
+  { topic: 5, criterium: 7 },
+  { topic: 6, criterium: 1 },
+  { topic: 6, criterium: 2 },
+  { topic: 7, criterium: 3 },
+  { topic: 8, criterium: 1 },
+  { topic: 8, criterium: 2 },
+  { topic: 8, criterium: 3 },
+  { topic: 8, criterium: 4 },
+  { topic: 8, criterium: 5 },
+  { topic: 8, criterium: 6 },
+  { topic: 8, criterium: 7 },
+  { topic: 8, criterium: 8 },
+  { topic: 9, criterium: 1 },
+  { topic: 9, criterium: 2 },
+  { topic: 10, criterium: 7 },
+  { topic: 10, criterium: 8 },
+  { topic: 10, criterium: 9 },
+  { topic: 10, criterium: 10 },
+  { topic: 10, criterium: 14 },
+  { topic: 11, criterium: 1 },
+  { topic: 11, criterium: 2 },
+  { topic: 11, criterium: 5 },
+  { topic: 11, criterium: 6 },
+  { topic: 11, criterium: 7 },
+  { topic: 11, criterium: 9 },
+  { topic: 11, criterium: 10 },
+  { topic: 12, criterium: 6 },
+  { topic: 12, criterium: 7 },
+  { topic: 12, criterium: 8 },
+  { topic: 12, criterium: 9 },
+  { topic: 12, criterium: 11 },
+  { topic: 13, criterium: 1 },
+  { topic: 13, criterium: 7 },
+  { topic: 13, criterium: 8 }
+];
+export const RGAA_COMPLEMENTARY_CRITERIA = [
+  ...RGAA_FAST_CRITERIA,
+  { topic: 1, criterium: 3 },
+  { topic: 1, criterium: 5 },
+  { topic: 1, criterium: 6 },
+  { topic: 1, criterium: 7 },
+  { topic: 4, criterium: 2 },
+  { topic: 4, criterium: 4 },
+  { topic: 4, criterium: 8 },
+  { topic: 4, criterium: 9 },
+  { topic: 5, criterium: 4 },
+  { topic: 5, criterium: 6 },
+  { topic: 7, criterium: 2 },
+  { topic: 8, criterium: 2 },
+  { topic: 8, criterium: 6 },
+  { topic: 8, criterium: 10 },
+  { topic: 10, criterium: 2 },
+  { topic: 10, criterium: 8 },
+  { topic: 10, criterium: 9 },
+  { topic: 10, criterium: 10 },
+  { topic: 13, criterium: 1 },
+  { topic: 13, criterium: 3 },
+  { topic: 13, criterium: 4 },
+  { topic: 13, criterium: 5 },
+  { topic: 13, criterium: 6 },
+  { topic: 13, criterium: 7 },
+  { topic: 13, criterium: 8 }
+];
+
+export const RAWEB_COMPLEMENTARY_CRITERIA = [...RAWEB_FAST_CRITERIA];
+
+export function fetchReferenceFile(auditReference: AuditReference) {
+  let criteria = null;
+  let methodologies = null;
+  switch (auditReference) {
+    case AuditReference.RAWEB:
+      criteria = rawebCriteria;
+      methodologies = rawebMethodologies;
+      break;
+    case AuditReference.RAAM:
+      criteria = raamCriteria;
+      methodologies = raamMethodologies;
+      break;
+    case AuditReference.RGAA:
+      criteria = rgaaCriteria;
+      methodologies = rgaaMethodologies;
+      break;
+    default:
+      break;
+  }
+  return { criteria: criteria, methodologies: methodologies };
+}
 export const useReferenceStore = defineStore("reference", {
   state: (): ReferenceStoreState => ({
     criteria: null,
@@ -49,27 +157,11 @@ export const useReferenceStore = defineStore("reference", {
   actions: {
     async fetchReference(auditReference: AuditReference) {
       this.reference = auditReference;
-      let criteria = null;
-      let methodologies = null;
-      switch (auditReference) {
-        case AuditReference.RAWEB:
-          criteria = rawebCriteria;
-          methodologies = rawebMethodologies;
-          break;
-        case AuditReference.RAAM:
-          criteria = raamCriteria;
-          methodologies = raamMethodologies;
-          break;
-        case AuditReference.RGAA:
-          criteria = rgaaCriteria;
-          methodologies = rgaaMethodologies;
-          break;
-        default:
-          break;
-      }
-      this.criteria = criteria;
-      this.methodologies = methodologies;
+      const referenceFile = fetchReferenceFile(auditReference);
+      this.criteria = referenceFile.criteria;
+      this.methodologies = referenceFile.methodologies;
     },
+
     getCriteria() {
       return this.criteria.topics.flatMap((topic) =>
         topic.criteria.map((c) => ({
@@ -82,7 +174,7 @@ export const useReferenceStore = defineStore("reference", {
       const result = [];
       switch (this.reference!) {
         case AuditReference.RAWEB:
-          result.push(...RGAA_FAST_CRITERIA);
+          result.push(...RAWEB_FAST_CRITERIA);
           break;
         case AuditReference.RAAM:
           break;
@@ -98,66 +190,12 @@ export const useReferenceStore = defineStore("reference", {
       const result = [];
       switch (this.reference!) {
         case AuditReference.RAWEB:
-          result.push(
-            ...RGAA_FAST_CRITERIA,
-            { topic: 1, criterium: 3 },
-            { topic: 1, criterium: 5 },
-            { topic: 1, criterium: 6 },
-            { topic: 1, criterium: 7 },
-            { topic: 4, criterium: 2 },
-            { topic: 4, criterium: 4 },
-            { topic: 4, criterium: 8 },
-            { topic: 4, criterium: 9 },
-            { topic: 5, criterium: 4 },
-            { topic: 5, criterium: 6 },
-            { topic: 7, criterium: 2 },
-            { topic: 8, criterium: 2 },
-            { topic: 8, criterium: 6 },
-            { topic: 8, criterium: 10 },
-            { topic: 10, criterium: 2 },
-            { topic: 10, criterium: 8 },
-            { topic: 10, criterium: 9 },
-            { topic: 10, criterium: 10 },
-            { topic: 13, criterium: 1 },
-            { topic: 13, criterium: 3 },
-            { topic: 13, criterium: 4 },
-            { topic: 13, criterium: 5 },
-            { topic: 13, criterium: 6 },
-            { topic: 13, criterium: 7 },
-            { topic: 13, criterium: 8 }
-          );
+          result.push(...RAWEB_COMPLEMENTARY_CRITERIA);
           break;
         case AuditReference.RAAM:
           break;
         case AuditReference.RGAA:
-          result.push(
-            ...RGAA_FAST_CRITERIA,
-            { topic: 1, criterium: 3 },
-            { topic: 1, criterium: 5 },
-            { topic: 1, criterium: 6 },
-            { topic: 1, criterium: 7 },
-            { topic: 4, criterium: 2 },
-            { topic: 4, criterium: 4 },
-            { topic: 4, criterium: 8 },
-            { topic: 4, criterium: 9 },
-            { topic: 5, criterium: 4 },
-            { topic: 5, criterium: 6 },
-            { topic: 7, criterium: 2 },
-            { topic: 8, criterium: 2 },
-            { topic: 8, criterium: 6 },
-            { topic: 8, criterium: 10 },
-            { topic: 10, criterium: 2 },
-            { topic: 10, criterium: 8 },
-            { topic: 10, criterium: 9 },
-            { topic: 10, criterium: 10 },
-            { topic: 13, criterium: 1 },
-            { topic: 13, criterium: 3 },
-            { topic: 13, criterium: 4 },
-            { topic: 13, criterium: 5 },
-            { topic: 13, criterium: 6 },
-            { topic: 13, criterium: 7 },
-            { topic: 13, criterium: 8 }
-          );
+          result.push(...RGAA_COMPLEMENTARY_CRITERIA);
           break;
         default:
           break;

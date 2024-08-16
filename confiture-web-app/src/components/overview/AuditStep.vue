@@ -4,8 +4,9 @@ import { useRoute } from "vue-router";
 
 import { useAuditStats } from "../../composables/useAuditStats";
 import { useResultsStore } from "../../store";
+import { useReferenceStore } from "../../store/reference";
 import { Audit, AuditType } from "../../types";
-import { formatDate, getCriteriaCount, pluralize } from "../../utils";
+import { formatDate, pluralize } from "../../utils";
 import AuditProgressBar from "../audit/AuditProgressBar.vue";
 import StatDonut from "../StatDonut.vue";
 import StepCard from "./StepCard.vue";
@@ -17,6 +18,7 @@ defineProps<{
 const route = useRoute();
 const uniqueId = computed(() => route.params.uniqueId as string);
 const resultsStore = useResultsStore();
+const referenceStore = useReferenceStore();
 
 const {
   complianceLevel,
@@ -54,7 +56,7 @@ const auditIsInProgress = computed(() => {
           v-if="audit.auditType"
           class="fr-badge fr-badge--info fr-badge--no-icon"
         >
-          {{ getCriteriaCount(audit.auditType) }}
+          {{ referenceStore.getCriteriaByAuditType()[audit.auditType] }}
           critères
         </p>
       </h2>
@@ -113,7 +115,7 @@ const auditIsInProgress = computed(() => {
       <div class="audit-step-chart">
         <StatDonut
           :value="notCompliantCriteriaCount"
-          :total="getCriteriaCount(audit.auditType)"
+          :total="referenceStore.getCriteriaByAuditType()[audit.auditType]"
           theme="red"
           size="sm"
         />
@@ -143,7 +145,7 @@ const auditIsInProgress = computed(() => {
       <div class="audit-step-chart">
         <StatDonut
           :value="notApplicableCriteriaCount"
-          :total="getCriteriaCount(audit.auditType)"
+          :total="referenceStore.getCriteriaByAuditType()[audit.auditType]"
           size="sm"
         />
 
@@ -156,7 +158,9 @@ const auditIsInProgress = computed(() => {
             }}
           </p>
           <p class="fr-text--xs fr-mb-0">
-            Sur {{ getCriteriaCount(audit.auditType) }} critères
+            Sur
+            {{ referenceStore.getCriteriaByAuditType()[audit.auditType] }}
+            critères
           </p>
         </div>
       </div>

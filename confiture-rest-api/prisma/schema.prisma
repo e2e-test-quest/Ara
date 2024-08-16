@@ -39,7 +39,7 @@ model Recipent {
 enum AuditType {
   FAST // 25 criteria
   COMPLEMENTARY // 50 criteria
-  FULL // 106 criteria
+  FULL
 }
 
 model Audit {

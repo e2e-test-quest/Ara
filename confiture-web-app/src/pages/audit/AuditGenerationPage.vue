@@ -20,7 +20,7 @@ import {
   AuditType,
   CriteriumResultStatus
 } from "../../types";
-import { getCriteriaCount, pluralize } from "../../utils";
+import { pluralize } from "../../utils";
 
 const route = useRoute();
 
@@ -31,9 +31,10 @@ const referenceStore = useReferenceStore();
 useWrappedFetch(async () => {
   resultsStore.$reset();
   await auditStore.fetchAuditIfNeeded(uniqueId.value);
+  await referenceStore.fetchReference(
+    auditStore.currentAudit?.auditReference ?? AuditReference.RAWEB
+  );
   await resultsStore.fetchResults(uniqueId.value);
-  //FIXME à modifier quand la reference sera sauvegarder dans l'audit
-  await referenceStore.fetchReference(AuditReference.RAWEB);
   await auditStore.updateCurrentPageId(
     auditStore.currentAudit?.pages.at(0)?.id ?? null
   );
@@ -121,13 +122,19 @@ const headerInfos = computed(() => [
       blockingCriteriaCount.value
     )} pour l’usager`,
     value: notCompliantCriteriaCount.value,
-    total: getCriteriaCount(auditStore.currentAudit?.auditType as AuditType),
+    total:
+      referenceStore.getCriteriaByAuditType()[
+        auditStore.currentAudit?.auditType as AuditType
+      ],
     theme: "red" as StatDonutTheme
   },
   {
     title: "Critères<br/> conformes",
     value: compliantCriteriaCount.value,
-    total: getCriteriaCount(auditStore.currentAudit?.auditType as AuditType),
+    total:
+      referenceStore.getCriteriaByAuditType()[
+        auditStore.currentAudit?.auditType as AuditType
+      ],
     theme: "green" as StatDonutTheme
   }
 ]);

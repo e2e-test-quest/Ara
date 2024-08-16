@@ -6,10 +6,12 @@ import BackLink from "../../components/ui/BackLink.vue";
 import TopLink from "../../components/ui/TopLink.vue";
 import { useWrappedFetch } from "../../composables/useWrappedFetch";
 import { useReportStore } from "../../store";
+import { useReferenceStore } from "../../store/reference";
 import { AuditType } from "../../types";
-import { formatDate, getCriteriaCount } from "../../utils";
+import { formatDate } from "../../utils";
 
 const report = useReportStore();
+const referenceStore = useReferenceStore();
 
 const route = useRoute();
 const uniqueId = route.params.uniqueId as string;
@@ -50,7 +52,7 @@ useWrappedFetch(() => report.fetchReport(uniqueId));
           : "une partie"
       }}
       des critères du RAWEB (<strong>{{
-        getCriteriaCount(report.data.auditType)
+        referenceStore.getCriteriaByAuditType()[report.data.auditType]
       }}</strong>
       critères) ont été appliqués sur l’ensemble des pages défini préalablement
       comme

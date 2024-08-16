@@ -4,11 +4,15 @@ import { ref } from "vue";
 import { useDevMode } from "../../composables/useDevMode";
 import { AuditReference } from "../../types";
 
+const props = defineProps<{
+  auditReference: AuditReference;
+}>();
+
 const emit = defineEmits<{
   (e: "submit", payload: { auditReference: AuditReference }): void;
 }>();
 
-const auditReference = ref(AuditReference.RAWEB);
+const auditReference = ref(props.auditReference ?? AuditReference.RAWEB);
 
 function submitAuditReference() {
   emit("submit", {
@@ -120,5 +124,6 @@ function fillSettings() {
 .actions {
   display: flex;
   justify-content: end;
+  gap: 1rem;
 }
 </style>

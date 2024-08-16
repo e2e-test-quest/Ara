@@ -8,7 +8,7 @@ import { useNotifications } from "../composables/useNotifications";
 import { useWrappedFetch } from "../composables/useWrappedFetch";
 import { useReportStore } from "../store";
 import { AuditStatus } from "../types";
-import { formatDate, getAuditStatus } from "../utils";
+import { formatDate } from "../utils";
 
 const report = useReportStore();
 
@@ -133,7 +133,7 @@ const siteUrl = computed(() => {
 
       <p
         v-if="
-          getAuditStatus(report.data) === AuditStatus.IN_PROGRESS &&
+          report.getAuditStatus === AuditStatus.IN_PROGRESS &&
           report.data.creationDate
         "
         class="fr-text--light fr-mb-4w dates"

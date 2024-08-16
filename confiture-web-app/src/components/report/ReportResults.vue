@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { useReportStore } from "../../store";
 import { AuditStatus, AuditType } from "../../types";
-import { getAuditStatus, pluralize, slugify } from "../../utils";
+import { pluralize, slugify } from "../../utils";
 import { StatDonutTheme } from "../StatDonut.vue";
 import SummaryCard from "../SummaryCard.vue";
 
@@ -88,7 +88,7 @@ const topicDistributionTableData = {
 };
 
 const auditInProgress = computed(
-  () => !!report.data && getAuditStatus(report.data) === AuditStatus.IN_PROGRESS
+  () => !!report.data && report.getAuditStatus === AuditStatus.IN_PROGRESS
 );
 </script>
 

@@ -145,7 +145,10 @@ async function submitStep(payload: Partial<CreateAuditRequestData>) {
   };
   if (currentStep.value === steps.length - 1) {
     submitAuditSettings();
-  } else if (audit.value.auditReference === AuditReference.RAAM) {
+  } else if (
+    audit.value.auditReference === AuditReference.RAAM &&
+    currentStep.value === 0
+  ) {
     currentStep.value += 2;
   } else {
     currentStep.value += 1;
@@ -237,7 +240,10 @@ function submitAuditSettings() {
 
 // Previous step button
 async function goToPreviousStep() {
-  if (audit.value.auditReference === AuditReference.RAAM) {
+  if (
+    audit.value.auditReference === AuditReference.RAAM &&
+    currentStep.value === 2
+  ) {
     currentStep.value -= 2;
   } else {
     currentStep.value -= 1;
@@ -269,7 +275,11 @@ async function goToPreviousStep() {
         :data-fr-steps="steps.length"
       />
     </div>
-    <NewAuditReference v-if="currentStep === 0" @submit="updateReference" />
+    <NewAuditReference
+      v-if="currentStep === 0"
+      :audit-reference="audit.auditReference"
+      @submit="updateReference"
+    />
     <NewUUVReport
       v-if="
         (audit.auditReference === AuditReference.RAWEB ||

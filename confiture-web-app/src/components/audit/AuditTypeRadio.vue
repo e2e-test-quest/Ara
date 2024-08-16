@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
+import { useReferenceStore } from "../../store/reference";
 import { AuditType } from "../../types";
-import { getCriteriaCount, pluralize } from "../../utils";
+import { pluralize } from "../../utils";
 
 const props = defineProps<{
   value: AuditType;
@@ -16,6 +17,7 @@ const props = defineProps<{
 defineEmits(["update:modelValue"]);
 
 const inputRef = ref<HTMLInputElement>();
+const referenceStore = useReferenceStore();
 
 // String used to describe input with goals and requirements
 const descriptionId = computed(() => {
@@ -53,7 +55,7 @@ const descriptionId = computed(() => {
         } radio-label`"
         :for="`audit-type-${value}`"
       >
-        {{ getCriteriaCount(value) }} critères
+        {{ referenceStore.getCriteriaByAuditType()[value].length }} critères
       </label>
     </div>
     <div v-if="detailed" class="fr-pl-3w">
@@ -82,7 +84,8 @@ const descriptionId = computed(() => {
         class="fr-link fr-link--sm radio-link"
         target="_blank"
       >
-        Liste des {{ getCriteriaCount(value) }} critères
+        Liste des
+        {{ referenceStore.getCriteriaByAuditType()[value].length }} critères
       </a>
     </div>
     <p v-else class="fr-text--xs fr-pl-3w fr-m-0 audit-type-name">

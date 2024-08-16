@@ -28,13 +28,14 @@ const methodologiesHtml = Object.values(
     i + 1
   }` as string;
   return marked.parse(
-    (referenceStore.methodologies as Record<string, string>)[key]
+    (referenceStore.methodologies as Record<string, string>)[key] ?? ""
   );
 });
 </script>
 
 <template>
   <LazyAccordion
+    v-if="testsHtml.length > 0"
     :title="`Tests et références du critère ${topicNumber}.${criterium.number}`"
     disclose-color="var(--background-default-grey)"
   >

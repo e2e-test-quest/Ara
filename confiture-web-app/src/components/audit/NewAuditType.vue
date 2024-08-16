@@ -2,6 +2,7 @@
 import { ref } from "vue";
 
 import { useDevMode } from "../../composables/useDevMode";
+import { useReferenceStore } from "../../store/reference";
 import { AuditReference, AuditType } from "../../types";
 import DsfrField from "../ui/DsfrField.vue";
 import AuditTypeRadio from "./AuditTypeRadio.vue";
@@ -11,6 +12,8 @@ const props = defineProps<{
   auditReference: AuditReference;
   procedureName: string;
 }>();
+
+const referenceStore = useReferenceStore();
 
 const emit = defineEmits<{
   (e: "submit", payload: { auditType: AuditType; procedureName: string }): void;
@@ -36,7 +39,11 @@ const partialAudits = [
   },
   {
     value: AuditType.COMPLEMENTARY,
-    goals: ["Approfondir l’audit 25 critères avec 25 critères supplémentaires"],
+    goals: [
+      `Approfondir l’audit ${
+        referenceStore.getCriteriaByAuditType()[AuditType.FAST]
+      } critères avec 25 critères supplémentaires`
+    ],
     documentation:
       "https://design.numerique.gouv.fr/outils/audit-complementaire/"
   }
@@ -155,6 +162,6 @@ function fillSettings() {
 
 .actions {
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
 }
 </style>

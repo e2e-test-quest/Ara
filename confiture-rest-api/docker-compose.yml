@@ -8,7 +8,16 @@ services:
       POSTGRES_PASSWORD: db-password
     ports:
       - "5432:5432"
-  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: db-user@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: db-password
+
   minio-server:
     image: 'bitnami/minio:latest'
     restart: always
