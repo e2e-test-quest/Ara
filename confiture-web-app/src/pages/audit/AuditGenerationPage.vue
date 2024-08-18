@@ -14,12 +14,7 @@ import { useAuditStats } from "../../composables/useAuditStats";
 import { useWrappedFetch } from "../../composables/useWrappedFetch";
 import { useAuditStore, useFiltersStore, useResultsStore } from "../../store";
 import { useReferenceStore } from "../../store/reference";
-import {
-  AuditPage,
-  AuditReference,
-  AuditType,
-  CriteriumResultStatus
-} from "../../types";
+import { AuditPage, AuditType, CriteriumResultStatus } from "../../types";
 import { pluralize } from "../../utils";
 
 const route = useRoute();
@@ -30,10 +25,6 @@ const referenceStore = useReferenceStore();
 
 useWrappedFetch(async () => {
   resultsStore.$reset();
-  await auditStore.fetchAuditIfNeeded(uniqueId.value);
-  await referenceStore.fetchReference(
-    auditStore.currentAudit?.auditReference ?? AuditReference.RAWEB
-  );
   await resultsStore.fetchResults(uniqueId.value);
   await auditStore.updateCurrentPageId(
     auditStore.currentAudit?.pages.at(0)?.id ?? null

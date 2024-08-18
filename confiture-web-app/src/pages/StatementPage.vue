@@ -94,6 +94,10 @@ const statementIsPublished = computed(() => {
   return !!report.data?.procedureInitiator;
 });
 
+const auditStatus = computed(() => {
+  return report.getAuditStatus;
+});
+
 const siteUrl = computed(() => {
   if (report.data) {
     return (
@@ -133,8 +137,7 @@ const siteUrl = computed(() => {
 
       <p
         v-if="
-          report.getAuditStatus === AuditStatus.IN_PROGRESS &&
-          report.data.creationDate
+          auditStatus === AuditStatus.IN_PROGRESS && report.data.creationDate
         "
         class="fr-text--light fr-mb-4w dates"
       >

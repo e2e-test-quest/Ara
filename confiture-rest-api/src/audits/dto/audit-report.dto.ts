@@ -4,6 +4,7 @@ import {
   CriterionResultStatus,
   CriterionResultUserImpact
 } from "@prisma/client";
+import { AuditReference } from "../criteria";
 
 export class AuditReportDto {
   /** Unique ID used to construct the report URL. */
@@ -28,6 +29,9 @@ export class AuditReportDto {
 
   @ApiProperty({ enum: AuditType })
   auditType: AuditType;
+
+  @ApiProperty({ enum: AuditReference })
+  auditReference: AuditReference;
 
   context: ReportContext;
 

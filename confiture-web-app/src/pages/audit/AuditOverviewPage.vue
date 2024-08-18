@@ -17,7 +17,6 @@ const resultsStore = useResultsStore();
 
 useWrappedFetch(async () => {
   resultsStore.$reset();
-  await auditStore.fetchAuditIfNeeded(uniqueId.value);
   await resultsStore.fetchResults(uniqueId.value);
 }, true);
 

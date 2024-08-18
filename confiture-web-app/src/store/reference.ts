@@ -155,7 +155,7 @@ export const useReferenceStore = defineStore("reference", {
     reference: null
   }),
   actions: {
-    async fetchReference(auditReference: AuditReference) {
+    fetchReference(auditReference: AuditReference) {
       this.reference = auditReference;
       const referenceFile = fetchReferenceFile(auditReference);
       this.criteria = referenceFile.criteria;

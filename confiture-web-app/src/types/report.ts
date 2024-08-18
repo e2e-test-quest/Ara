@@ -1,4 +1,9 @@
-import { AuditFile, AuditType, CriteriumResult } from "../types";
+import {
+  AuditFile,
+  AuditReference,
+  AuditType,
+  CriteriumResult
+} from "../types";
 
 export interface AuditReport {
   consultUniqueId: string;
@@ -19,8 +24,8 @@ export interface AuditReport {
   notInScopeContent?: string;
   notes?: string;
   notesFiles: AuditFile[];
-  //FIXME ajouter le référentiel dans le rapport
   auditType: AuditType;
+  auditReference: AuditReference;
 
   context: AuditReportContext;
 

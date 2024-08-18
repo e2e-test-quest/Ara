@@ -28,7 +28,9 @@ const accountStore = useAccountStore();
 const referenceStore = useReferenceStore();
 
 const fullCriteriaCount = computed(() => {
-  referenceStore.fetchReference(AuditReference.RAWEB);
+  if (!referenceStore.reference) {
+    referenceStore.fetchReference(AuditReference.RAWEB);
+  }
   return referenceStore.getCriteria().length;
 });
 if (accountStore.account) {

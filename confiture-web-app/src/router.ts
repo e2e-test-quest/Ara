@@ -28,7 +28,9 @@ import ContextPage from "./pages/report/ContextPage.vue";
 import ReportPage from "./pages/report/ReportPage.vue";
 import RoadmapPage from "./pages/RoadmapPage.vue";
 import StatementPage from "./pages/StatementPage.vue";
-import { useAccountStore, useAuditStore } from "./store";
+import { useAccountStore, useAuditStore, useReportStore } from "./store";
+import { useReferenceStore } from "./store/reference";
+import { AuditReference } from "./types";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -49,6 +51,21 @@ function getProcedureName() {
   return auditStore.currentAudit?.procedureName ?? "Mon audit";
 }
 
+async function fetchReferenceByReport(to) {
+  const reportStore = useReportStore();
+  await reportStore.fetchReport(<string>to.params.uniqueId);
+  await useReferenceStore().fetchReference(
+    reportStore.data?.auditReference ?? AuditReference.RAWEB
+  );
+}
+
+async function fetchReferenceByAudit(to) {
+  const auditStore = useAuditStore();
+  await auditStore.fetchAuditIfNeeded(<string>to.params.uniqueId);
+  await useReferenceStore().fetchReference(
+    auditStore.currentAudit?.auditReference ?? AuditReference.RAWEB
+  );
+}
 const router = createRouter({
   routes: [
     // Base pages
@@ -196,6 +213,10 @@ const router = createRouter({
       path: "/audits/:uniqueId/parametres",
       name: "audit-settings",
       component: AuditSettingsPage,
+      async beforeEnter(to, from, next) {
+        await fetchReferenceByAudit(to);
+        next();
+      },
       meta: {
         name: "Mon audit"
       }
@@ -212,6 +233,10 @@ const router = createRouter({
       path: "/audits/:uniqueId/generation",
       name: "audit-generation",
       component: AuditGenerationPage,
+      async beforeEnter(to, from, next) {
+        await fetchReferenceByAudit(to);
+        next();
+      },
       meta: {
         name: "Mon audit"
       }
@@ -237,6 +262,10 @@ const router = createRouter({
       path: "/audits/:uniqueId/synthese",
       name: "audit-overview",
       component: AuditOverviewPage,
+      async beforeEnter(to, from, next) {
+        await fetchReferenceByAudit(to);
+        next();
+      },
       meta: {
         name: `Synthèse ${getProcedureName}`
       }
@@ -246,6 +275,10 @@ const router = createRouter({
       path: "/rapport/:uniqueId/contexte",
       name: "context",
       component: ContextPage,
+      async beforeEnter(to, from, next) {
+        await fetchReferenceByReport(to);
+        next();
+      },
       meta: {
         name: "Contexte",
         hideHomeLink: true
@@ -263,6 +296,10 @@ const router = createRouter({
       path: "/rapport/:uniqueId/:tab?",
       name: "report",
       component: ReportPage,
+      async beforeEnter(to, from, next) {
+        await fetchReferenceByReport(to);
+        next();
+      },
       meta: {
         name: "Rapport d’audit",
         hideHomeLink: true

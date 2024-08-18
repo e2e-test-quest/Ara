@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 
 import PageMeta from "../../components/PageMeta";
 import BackLink from "../../components/ui/BackLink.vue";
 import TopLink from "../../components/ui/TopLink.vue";
-import { useWrappedFetch } from "../../composables/useWrappedFetch";
 import { useReportStore } from "../../store";
 import { useReferenceStore } from "../../store/reference";
-import { AuditType } from "../../types";
+import { AuditReference, AuditType } from "../../types";
 import { formatDate } from "../../utils";
 
 const report = useReportStore();
@@ -16,7 +16,17 @@ const referenceStore = useReferenceStore();
 const route = useRoute();
 const uniqueId = route.params.uniqueId as string;
 
-useWrappedFetch(() => report.fetchReport(uniqueId));
+const reference = computed(() => {
+  switch (referenceStore.reference) {
+    case AuditReference.RAWEB:
+      return "Référentiel d'Évaluation de l'Accessibilité Web (RAWeb 1)";
+    case AuditReference.RAAM:
+      return "Référentiel d'évaluation de l'accessibilité des applications mobiles (RAAM 1)";
+    case AuditReference.RGAA:
+      return "Référentiel général d'amélioration de l'accessibilité (RGAA)";
+  }
+  return "";
+});
 
 /**
  * FIXME: the following info are not provided:
@@ -51,7 +61,7 @@ useWrappedFetch(() => report.fetchReport(uniqueId));
           ? "l’intégralité"
           : "une partie"
       }}
-      des critères du RAWEB (<strong>{{
+      des critères du {{ referenceStore.reference }} (<strong>{{
         referenceStore.getCriteriaByAuditType()[report.data.auditType].length
       }}</strong>
       critères) ont été appliqués sur l’ensemble des pages défini préalablement
@@ -111,7 +121,7 @@ useWrappedFetch(() => report.fetchReport(uniqueId));
     <h2 class="fr-mb-2w fr-mb-md-3w">Méthodologie et référentiel</h2>
     <p>
       La méthodologie utilisée pour réaliser cet audit repose sur le
-      <strong>Référentiel d'Évaluation de l'Accessibilité Web (RAWEB) 1</strong
+      <strong>{{ reference }}</strong
       >.
     </p>
 

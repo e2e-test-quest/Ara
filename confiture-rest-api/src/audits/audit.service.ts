@@ -847,6 +847,8 @@ export class AuditService {
       procedureName: audit.procedureName,
       procedureUrl: audit.procedureUrl,
       auditType: audit.auditType,
+      auditReference:
+        AuditReference[audit.auditReference as keyof typeof AuditReference],
       creationDate: audit.creationDate,
       publishDate: audit.publicationDate,
       updateDate: audit.editionDate,

@@ -2,13 +2,14 @@
 import { computed } from "vue";
 
 import { useReportStore } from "../../store";
+import { useReferenceStore } from "../../store/reference";
 import { AuditStatus, AuditType } from "../../types";
 import { pluralize, slugify } from "../../utils";
 import { StatDonutTheme } from "../StatDonut.vue";
 import SummaryCard from "../SummaryCard.vue";
 
 const report = useReportStore();
-
+const referenceStore = useReferenceStore();
 const stats = computed(() => {
   return [
     ...(report.data?.auditType === AuditType.FULL
@@ -17,7 +18,7 @@ const stats = computed(() => {
             title: "Taux global de conformité",
             description: auditInProgress.value
               ? "(Disponible à la fin de l’audit)"
-              : aud,
+              : report.data.auditReference,
             value: auditInProgress.value ? 0 : report.data?.accessibilityRate,
             total: 100,
             unit: "%",
@@ -49,27 +50,29 @@ const stats = computed(() => {
   ];
 });
 
-const pageDistributionTableData = {
-  title: "Répartition des critères par pages",
-  data: [
-    ["Pages", "Critères conformes", "Critères non conformes"],
-    ...(report.data
-      ? report.data.pageDistributions.map((p) => {
-          return [
-            p.name,
-            `${Math.round(p.compliant.raw)}`,
-            `${Math.round(p.notCompliant.raw)}`
-          ];
-        })
-      : [])
-  ]
-};
+const pageDistributionTableData = computed(() => {
+  return {
+    title: "Répartition des critères par pages",
+    data: [
+      ["Pages", "Critères conformes", "Critères non conformes"],
+      ...(report.data
+        ? report.data.pageDistributions.map((p) => {
+            return [
+              p.name,
+              `${Math.round(p.compliant.raw)}`,
+              `${Math.round(p.notCompliant.raw)}`
+            ];
+          })
+        : [])
+    ]
+  };
+});
 
 const topicDistributionTableData = {
   title: "Répartition des critères par thématiques du RAWEB",
   data: [
     [
-      "Thématiques du RAWEB",
+      `Thématiques du ${referenceStore.reference}`,
       "Critères conformes",
       "Critères non conformes",
       "Critères non applicables"
@@ -153,7 +156,7 @@ const auditInProgress = computed(
                 <thead>
                   <tr>
                     <th
-                      v-for="header in pageDistributionTableData.criteria[0]"
+                      v-for="header in pageDistributionTableData.data[0]"
                       :key="header"
                       scope="col"
                     >
@@ -163,9 +166,7 @@ const auditInProgress = computed(
                 </thead>
                 <tbody>
                   <tr
-                    v-for="(row, i) in pageDistributionTableData.criteria.slice(
-                      1
-                    )"
+                    v-for="(row, i) in pageDistributionTableData.data.slice(1)"
                     :key="i"
                   >
                     <td>

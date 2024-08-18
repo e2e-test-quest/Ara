@@ -10,7 +10,6 @@ import ReportNotes from "../../components/report/ReportNotes.vue";
 import ReportResults from "../../components/report/ReportResults.vue";
 import Dropdown from "../../components/ui/Dropdown.vue";
 import TopLink from "../../components/ui/TopLink.vue";
-import { useWrappedFetch } from "../../composables/useWrappedFetch";
 import { useReportStore } from "../../store";
 import { AuditStatus, CriteriumResultStatus } from "../../types";
 import { formatBytes, formatDate, slugify } from "../../utils";
@@ -19,8 +18,6 @@ const reportStore = useReportStore();
 
 const route = useRoute();
 const uniqueId = route.params.uniqueId as string;
-
-useWrappedFetch(() => reportStore.fetchReport(uniqueId));
 
 const hasNotes = computed(() => {
   return !!reportStore.data?.notes || reportStore.data?.notesFiles.length;
@@ -45,6 +42,10 @@ const tabs = computed(() => [
     : [])
 ]);
 
+const auditStatus = computed(() => {
+  return reportStore.getAuditStatus;
+});
+
 const showCopyAlert = ref(false);
 
 async function copyReportUrl() {
@@ -66,7 +67,7 @@ watch(
   (report) => {
     if (report) {
       if (
-        reportStore.getAuditStatus !== AuditStatus.IN_PROGRESS &&
+        auditStatus.value !== AuditStatus.IN_PROGRESS &&
         localStorage.getItem("confiture:seen-onboarding") !== "true"
       ) {
         onboardingModalRef.value?.show();
@@ -132,9 +133,7 @@ const siteUrl = computed(() => {
 
 <template>
   <div
-    v-if="
-      reportStore.data && reportStore.getAuditStatus === AuditStatus.IN_PROGRESS
-    "
+    v-if="reportStore.data && auditStatus === AuditStatus.IN_PROGRESS"
     class="fr-pt-1w in-progress-alert"
   >
     <div class="fr-alert fr-alert--warning fr-mb-6w">
@@ -205,7 +204,7 @@ const siteUrl = computed(() => {
 
       <p
         v-if="
-          reportStore.getAuditStatus === AuditStatus.IN_PROGRESS &&
+          auditStatus === AuditStatus.IN_PROGRESS &&
           reportStore.data.creationDate
         "
         class="fr-text--light fr-mb-4w dates"
